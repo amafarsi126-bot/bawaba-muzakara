@@ -163,7 +163,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
   <div class="lbox">
     <div class="lbox-icon">📚</div>
     <div class="lbox-title">بوابة المذاكرة</div>
-    <div class="lbox-sub">أدخلي رقم هاتفك للدخول<br><small style="color:var(--muted);font-size:.75rem;">لا يلزم تسجيل مسبق</small></div>
+    <div class="lbox-sub">أدخل رقم هاتفك للدخول<br><small style="color:var(--muted);font-size:.75rem;">لا يلزم تسجيل مسبق</small></div>
     <div class="code-row">
       <div class="code-pre">🇴🇲 968</div>
       <input type="tel" id="login-input" class="finput"
@@ -171,13 +171,12 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
         onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="lbtn" id="login-btn" onclick="doLogin()">دخول ←</button>
-    <div class="lerr err"  id="err-invalid">❌ رقم غير صحيح — أدخلي 8 أرقام تبدأ بـ 7 أو 9</div>
-    <div class="lerr ban"  id="err-banned">🚫 تم حظر هذا الرقم<br><small>للاستفسار تواصلي مع المشرفة</small></div>
+    <div class="lerr err"  id="err-invalid">❌ رقم غير صحيح — أدخل 8 أرقام</div>
+    <div class="lerr ban"  id="err-banned">🚫 تم حظر هذا الرقم<br><small>للاستفسار تواصل مع المشرف</small></div>
 
     <button class="install-btn" id="install-btn" onclick="installApp()">📲 تثبيت التطبيق على الجهاز</button>
     <button class="adm-trigger" onclick="goScreen('admin-login')">⚙</button>
     <div class="brand-b">BY: AMAL ALFARSI</div>
-    <button class="adm-trigger" onclick="directEntry()" style="color:rgba(201,168,76,.25);margin-top:4px;">دخول مباشر</button>
   </div>
 </div>
 
@@ -187,7 +186,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
     <div class="lbox">
       <div class="lbox-icon">🔐</div>
       <div class="lbox-title">لوحة الإدارة</div>
-      <div class="lbox-sub">أدخلي كلمة سر المشرفة</div>
+      <div class="lbox-sub">أدخل كلمة السر</div>
       <input type="password" id="adm-pass" class="finput" style="direction:ltr;width:100%;margin-bottom:16px;"
         placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()">
       <button class="lbtn" onclick="doAdminLogin()">دخول ←</button>
@@ -203,7 +202,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
     <div class="hw" id="hw"></div>
     <div class="home-icon">📚</div>
     <h1 class="home-title">بوابة المذاكرة</h1>
-    <p class="home-sub">اختاري القسم الذي تريدينه</p>
+    <p class="home-sub">اختر القسم الذي تريده</p>
     <div class="cards">
       <a href="shamil.html" class="card c1">
         <span class="card-ico">🎓</span>
@@ -218,7 +217,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
       <a href="ta3beer.html" class="card c2">
         <span class="card-ico">✍️</span>
         <div class="card-name">اختبار التعبير</div>
-        <div class="card-desc">تعلّمي وتدرّبي على كتابة التعبير</div>
+        <div class="card-desc">تعلّم وتدرّب على كتابة التعبير</div>
       </a>
       <a href="qadaa.html" class="card c3">
         <span class="card-ico">⚖️</span>
@@ -228,7 +227,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
       <a href="progress.html" class="card c4" style="grid-column:span 2;">
         <span class="card-ico">📈</span>
         <div class="card-name">تقدمي ونتائجي</div>
-        <div class="card-desc">شاهدي نتائج جميع اختباراتك ومقارنة تقدمك</div>
+        <div class="card-desc">شاهد نتائج جميع اختباراتك ومقارنة تقدمك</div>
       </a>
     </div>
     <div class="home-brand">by: Amal Alfarsi</div>
@@ -255,7 +254,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
         <span>📋 المسجّلون (<span id="u-count">0</span>)</span>
         <button class="refresh-btn" onclick="loadAdmin()">🔄 تحديث</button>
       </div>
-      <input type="text" class="search-inp" id="search-inp" placeholder="🔍 ابحثي برقم الهاتف..." oninput="renderUsers()">
+      <input type="text" class="search-inp" id="search-inp" placeholder="🔍 ابحث برقم الهاتف..." oninput="renderUsers()">
       <div id="users-list"><div class="no-users">جاري التحميل... ⏳</div></div>
     </div>
   </div>
@@ -326,7 +325,13 @@ window.addEventListener('load', function(){
       document.getElementById('splash').style.display = 'none';
       var saved = localStorage.getItem('pwa_user');
       if(saved === '__admin__'){ goScreen('admin'); loadAdmin(); }
-      else if(saved){ enterHome(saved); }
+      else if(saved){
+        // تحقق من الحظر في الخلفية فقط
+        enterHome(saved);
+        gas({action:'check', num:saved}).then(function(res){
+          if(res.msg === 'banned'){ logout(); }
+        });
+      }
       else{ goScreen('login'); }
     }, 800);
   }, 2200);
@@ -453,7 +458,7 @@ async function addUser(){
   var val = document.getElementById('add-num').value.trim().replace(/\D/g,'');
   var msg = document.getElementById('add-msg');
   if(!validateOmani(val)){
-    msg.style.color='var(--red)'; msg.textContent='❌ أدخلي 8 أرقام تبدأ بـ 7 أو 9'; return;
+    msg.style.color='var(--red)'; msg.textContent='❌ أدخل 8 أرقام'; return;
   }
   var fullNum = "968"+val;
   msg.style.color='var(--muted)'; msg.textContent='جاري الإضافة...';
@@ -483,17 +488,6 @@ async function deleteUser(num){
   var res = await gas({action:'delete', num:num, pass:ADMIN_PASS});
   if(res.ok){ _users=null; loadAdmin(); }
   else { alert('فشل الحذف، حاولي مرة أخرى'); }
-}
-
-function directEntry(){
-  var p = prompt('كلمة سر المشرفة:');
-  if(p === ADMIN_PASS){
-    localStorage.setItem('pwa_user','__admin__');
-    goScreen('admin');
-    loadAdmin();
-  } else if(p !== null){
-    alert('كلمة السر غير صحيحة');
-  }
 }
 
 window.logTest = function(){

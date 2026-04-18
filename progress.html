@@ -198,169 +198,65 @@ render();
 </script>
 
 
-<script>
-/* ====================================================
-   🤖 المساعد القانوني الذكي — بوابة المذاكرة
-   by: Amal Alfarsi
-   أضف هذا الملف في كل صفحة: <script src="ai-chat.js"><\/script>
-   ==================================================== */
 
+<script>
+/* المساعد القانوني الذكي — بوابة المذاكرة | by: Amal Alfarsi */
 (function(){
 'use strict';
 
-var WA_NUM = '96898981098';
-
 var css = `
-/* ── AI Chat Widget ── */
-#ai-bubble {
-  position:fixed; bottom:84px; left:18px;
-  width:52px; height:52px; border-radius:50%;
-  background:linear-gradient(135deg,#c9a84c,#a07820);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; z-index:9000;
-  box-shadow:0 4px 20px rgba(201,168,76,.5);
-  transition:all .3s; font-size:1.5rem;
-  border:2px solid rgba(201,168,76,.4);
-  animation:aiPulse 3s ease-in-out infinite;
-}
-#ai-bubble:hover{ transform:scale(1.1); }
-@keyframes aiPulse{
-  0%,100%{box-shadow:0 4px 20px rgba(201,168,76,.4)}
-  50%{box-shadow:0 4px 30px rgba(201,168,76,.7)}
-}
-#ai-bubble .ai-badge{
-  position:absolute; top:-4px; right:-4px;
-  width:16px; height:16px; border-radius:50%;
-  background:#3fb950; border:2px solid #0b1120;
-  font-size:8px; display:flex; align-items:center; justify-content:center;
-  color:#fff; font-weight:900;
-}
-
-/* ── Panel ── */
-#ai-panel {
-  position:fixed; bottom:150px; left:14px;
-  width:min(360px, calc(100vw - 28px));
-  max-height:min(540px, calc(100vh - 170px));
-  background:linear-gradient(160deg,#0f1a2e,#162035);
-  border:1.5px solid rgba(201,168,76,.3);
-  border-radius:20px; z-index:9001;
-  display:none; flex-direction:column;
-  box-shadow:0 20px 60px rgba(0,0,0,.7);
-  overflow:hidden;
-}
-#ai-panel.open{ display:flex; animation:slideUp .25s ease; }
-@keyframes slideUp{ from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-
-/* Header */
-.ai-hdr{
-  background:linear-gradient(135deg,#1a2a45,#0f1d35);
-  border-bottom:2px solid rgba(201,168,76,.3);
-  padding:13px 16px; display:flex; align-items:center; gap:10px;
-}
-.ai-hdr-ico{ font-size:1.4rem; }
-.ai-hdr-info{ flex:1; }
-.ai-hdr-title{ font-size:.9rem; font-weight:800; color:#c9a84c; }
-.ai-hdr-sub{ font-size:.68rem; color:#6a7fa8; margin-top:1px; }
-.ai-close{
-  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
-  color:#8a9bbf; width:28px; height:28px; border-radius:50%;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  font-size:.8rem; transition:all .2s;
-}
-.ai-close:hover{ background:rgba(248,81,73,.2); color:#f85149; border-color:rgba(248,81,73,.3); }
-
-/* Messages */
-.ai-msgs{
-  flex:1; overflow-y:auto; padding:14px;
-  display:flex; flex-direction:column; gap:10px;
-}
-.ai-msgs::-webkit-scrollbar{ width:4px; }
-.ai-msgs::-webkit-scrollbar-thumb{ background:rgba(201,168,76,.25); border-radius:2px; }
-
-.ai-msg{ display:flex; gap:8px; animation:msgIn .2s ease; }
-@keyframes msgIn{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-.ai-msg.user{ flex-direction:row-reverse; }
-
-.ai-msg-ico{
-  width:30px; height:30px; border-radius:50%; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; font-size:.9rem;
-}
-.ai-msg.bot .ai-msg-ico{ background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.25); }
-.ai-msg.user .ai-msg-ico{ background:rgba(88,166,255,.15); border:1px solid rgba(88,166,255,.2); }
-
-.ai-msg-bubble{
-  max-width:82%; padding:10px 13px; border-radius:14px;
-  font-size:.84rem; line-height:1.75; direction:rtl;
-}
-.ai-msg.bot .ai-msg-bubble{
-  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09);
-  color:#dde5f2; border-radius:4px 14px 14px 14px;
-}
-.ai-msg.user .ai-msg-bubble{
-  background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1));
-  border:1px solid rgba(201,168,76,.25); color:#e8d48a;
-  border-radius:14px 4px 14px 14px;
-}
-
-/* Typing */
-.ai-typing{ display:flex; gap:5px; padding:4px 0; }
-.ai-typing span{
-  width:7px; height:7px; border-radius:50%; background:#c9a84c;
-  animation:dotBounce 1.2s ease-in-out infinite;
-}
-.ai-typing span:nth-child(2){ animation-delay:.2s; }
-.ai-typing span:nth-child(3){ animation-delay:.4s; }
-@keyframes dotBounce{
-  0%,80%,100%{ transform:scale(.6); opacity:.4; }
-  40%{ transform:scale(1); opacity:1; }
-}
-
-/* Suggestions */
-.ai-suggestions{
-  padding:0 14px 10px; display:flex; flex-wrap:wrap; gap:6px;
-}
-.ai-sug{
-  background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2);
-  color:#c9a84c; padding:5px 11px; border-radius:20px;
-  font-size:.72rem; cursor:pointer; transition:all .2s; font-family:inherit;
-}
-.ai-sug:hover{ background:rgba(201,168,76,.18); }
-
-/* Input */
-.ai-input-row{
-  padding:10px 12px; border-top:1px solid rgba(255,255,255,.08);
-  display:flex; gap:8px; align-items:flex-end;
-}
-.ai-textarea{
-  flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
-  border-radius:12px; color:#e2e8f4; padding:9px 12px; font-family:inherit;
-  font-size:.84rem; resize:none; max-height:100px; min-height:38px;
-  direction:rtl; line-height:1.5;
-}
-.ai-textarea:focus{ outline:none; border-color:rgba(201,168,76,.4); }
-.ai-textarea::placeholder{ color:#4a5a78; }
-.ai-send{
-  background:linear-gradient(135deg,#c9a84c,#a07820); color:#0b1120;
-  border:none; width:36px; height:36px; border-radius:10px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; font-size:1rem;
-  transition:all .2s; flex-shrink:0;
-}
-.ai-send:hover{ transform:scale(1.08); }
-.ai-send:disabled{ opacity:.4; cursor:default; transform:none; }
+#ai-bubble{position:fixed;bottom:84px;left:18px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#a07820);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9000;box-shadow:0 4px 20px rgba(201,168,76,.5);transition:all .3s;font-size:1.5rem;border:2px solid rgba(201,168,76,.4);animation:aiPulse 3s ease-in-out infinite;}
+#ai-bubble:hover{transform:scale(1.1);}
+@keyframes aiPulse{0%,100%{box-shadow:0 4px 20px rgba(201,168,76,.4)}50%{box-shadow:0 4px 30px rgba(201,168,76,.7)}}
+.ai-badge{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:#3fb950;border:2px solid #0b1120;font-size:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;}
+#ai-panel{position:fixed;bottom:150px;left:14px;width:min(360px,calc(100vw - 28px));max-height:min(540px,calc(100vh - 170px));background:linear-gradient(160deg,#0f1a2e,#162035);border:1.5px solid rgba(201,168,76,.3);border-radius:20px;z-index:9001;display:none;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.7);overflow:hidden;}
+#ai-panel.open{display:flex;animation:slideUp .25s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.ai-hdr{background:linear-gradient(135deg,#1a2a45,#0f1d35);border-bottom:2px solid rgba(201,168,76,.3);padding:13px 16px;display:flex;align-items:center;gap:10px;}
+.ai-hdr-ico{font-size:1.4rem;}
+.ai-hdr-info{flex:1;}
+.ai-hdr-title{font-size:.9rem;font-weight:800;color:#c9a84c;}
+.ai-hdr-sub{font-size:.68rem;color:#6a7fa8;margin-top:1px;}
+.ai-close{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#8a9bbf;width:28px;height:28px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .2s;}
+.ai-close:hover{background:rgba(248,81,73,.2);color:#f85149;}
+.ai-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.ai-msgs::-webkit-scrollbar{width:4px;}
+.ai-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);border-radius:2px;}
+.ai-msg{display:flex;gap:8px;animation:msgIn .2s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ai-msg.user{flex-direction:row-reverse;}
+.ai-msg-ico{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.ai-msg.bot .ai-msg-ico{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);}
+.ai-msg.user .ai-msg-ico{background:rgba(88,166,255,.15);border:1px solid rgba(88,166,255,.2);}
+.ai-msg-bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:.84rem;line-height:1.75;direction:rtl;}
+.ai-msg.bot .ai-msg-bubble{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);color:#dde5f2;border-radius:4px 14px 14px 14px;}
+.ai-msg.user .ai-msg-bubble{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.25);color:#e8d48a;border-radius:14px 4px 14px 14px;}
+.ai-typing{display:flex;gap:5px;padding:4px 0;}
+.ai-typing span{width:7px;height:7px;border-radius:50%;background:#c9a84c;animation:dotB 1.2s ease-in-out infinite;}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes dotB{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.ai-sugs{padding:0 14px 10px;display:flex;flex-wrap:wrap;gap:6px;}
+.ai-sug{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:#c9a84c;padding:5px 11px;border-radius:20px;font-size:.72rem;cursor:pointer;transition:all .2s;font-family:inherit;}
+.ai-sug:hover{background:rgba(201,168,76,.18);}
+.ai-input-row{padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:8px;align-items:flex-end;}
+.ai-ta{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#e2e8f4;padding:9px 12px;font-family:inherit;font-size:.84rem;resize:none;max-height:100px;min-height:38px;direction:rtl;line-height:1.5;}
+.ai-ta:focus{outline:none;border-color:rgba(201,168,76,.4);}
+.ai-ta::placeholder{color:#4a5a78;}
+.ai-send{background:linear-gradient(135deg,#c9a84c,#a07820);color:#0b1120;border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .2s;flex-shrink:0;}
+.ai-send:hover{transform:scale(1.08);}
+.ai-send:disabled{opacity:.4;cursor:default;transform:none;}
 `;
 
-// Inject CSS
 var s = document.createElement('style');
 s.textContent = css;
 document.head.appendChild(s);
 
-// Inject HTML
-var html = `
+var wrap = document.createElement('div');
+wrap.innerHTML = `
 <div id="ai-bubble" onclick="toggleAI()" title="المساعد القانوني">
-  🤖
-  <div class="ai-badge">AI</div>
+  ⚖️<div class="ai-badge">AI</div>
 </div>
-
 <div id="ai-panel">
   <div class="ai-hdr">
     <div class="ai-hdr-ico">⚖️</div>
@@ -373,38 +269,31 @@ var html = `
   <div class="ai-msgs" id="ai-msgs">
     <div class="ai-msg bot">
       <div class="ai-msg-ico">⚖️</div>
-      <div class="ai-msg-bubble">مرحباً! أنا مساعدك القانوني. يمكنك سؤالي عن أي موضوع قانوني يتعلق بالقوانين العُمانية أو الاختبارات. كيف أساعدك؟</div>
+      <div class="ai-msg-bubble">مرحباً! أنا مساعدك القانوني. اسألني عن أي موضوع يتعلق بالقوانين العُمانية.</div>
     </div>
   </div>
-  <div class="ai-suggestions" id="ai-sugs">
+  <div class="ai-sugs" id="ai-sugs">
     <button class="ai-sug" onclick="askSug(this)">ما تعريف الجريمة؟</button>
     <button class="ai-sug" onclick="askSug(this)">شروط تعيين رجل الشرطة</button>
-    <button class="ai-sug" onclick="askSug(this)">أركان الزواج في الأحوال الشخصية</button>
-    <button class="ai-sug" onclick="askSug(this)">عقوبة التجسس في السلم</button>
+    <button class="ai-sug" onclick="askSug(this)">أركان الزواج</button>
+    <button class="ai-sug" onclick="askSug(this)">عقوبة الإرهاب</button>
   </div>
   <div class="ai-input-row">
-    <textarea class="ai-textarea" id="ai-input" placeholder="اكتب سؤالك هنا..." rows="1"
+    <textarea class="ai-ta" id="ai-input" placeholder="اكتب سؤالك هنا..." rows="1"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI();}"
       oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
     <button class="ai-send" id="ai-send-btn" onclick="sendAI()">➤</button>
   </div>
-</div>
-`;
-
-var wrap = document.createElement('div');
-wrap.innerHTML = html;
+</div>`;
 document.body.appendChild(wrap);
 
-// ── State ──
 var history = [];
 var busy = false;
 
 window.toggleAI = function(){
-  var panel = document.getElementById('ai-panel');
-  panel.classList.toggle('open');
-  if(panel.classList.contains('open')){
-    document.getElementById('ai-input').focus();
-  }
+  var p = document.getElementById('ai-panel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')) document.getElementById('ai-input').focus();
 };
 
 window.askSug = function(btn){
@@ -416,57 +305,36 @@ window.askSug = function(btn){
 window.sendAI = async function(){
   if(busy) return;
   var inp = document.getElementById('ai-input');
-  var q   = inp.value.trim();
+  var q = inp.value.trim();
   if(!q) return;
-
-  inp.value = '';
-  inp.style.height = 'auto';
+  inp.value = ''; inp.style.height = 'auto';
   document.getElementById('ai-sugs').style.display = 'none';
   document.getElementById('ai-send-btn').disabled = true;
   busy = true;
-
   addMsg('user', q);
   history.push({role:'user', content:q});
-
-  // Typing indicator
-  var typingId = 'typing_' + Date.now();
-  addTyping(typingId);
-
-  try {
-    // Gemini API - مجاني
-    var GEMINI_KEY = 'AQ.Ab8RN6JJRlhznmYbUgKqYHvlpsOQhKrgKaLsuzvj009mhqbhDg';
-    var geminiMessages = history.map(function(m){
-      return { role: m.role==='assistant'?'model':'user', parts:[{text:m.content}] };
-    });
-    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY, {
+  var tid = 'typing_'+Date.now();
+  addTyping(tid);
+  try{
+    var r = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        system_instruction: { parts:[{text:'أنت مساعد قانوني متخصص في القوانين العُمانية. أجب بالعربية الفصحى بشكل مختصر وواضح. اذكر رقم المادة إذا أمكن.'}] },
-        contents: geminiMessages
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'أنت مساعد قانوني متخصص في القوانين العُمانية. أجب بالعربية الفصحى بشكل مختصر وواضح. اذكر رقم المادة إذا أمكن.',
+        messages: history
       })
     });
-
-    removeTyping(typingId);
-
-    var data = await res.json();
-    var answer = '';
-    if(data.candidates && data.candidates[0]){
-      answer = data.candidates[0].content.parts[0].text || 'عذراً، لم أتمكن من الإجابة.';
-    } else if(data.error){
-      answer = 'عذراً، حدث خطأ: ' + (data.error.message||'');
-    } else {
-      answer = 'عذراً، لم أتمكن من الإجابة.';
-    }
-
-    history.push({role:'assistant', content:answer});
-    addMsg('bot', answer);
-
-  } catch(e){
-    removeTyping(typingId);
-    addMsg('bot', 'عذراً، حدث خطأ في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.');
+    var d = await r.json();
+    removeTyping(tid);
+    var ans = d.content && d.content[0] ? d.content[0].text : 'عذراً، حدث خطأ.';
+    history.push({role:'assistant', content:ans});
+    addMsg('bot', ans);
+  }catch(e){
+    removeTyping(tid);
+    addMsg('bot','عذراً، حدث خطأ في الاتصال.');
   }
-
   busy = false;
   document.getElementById('ai-send-btn').disabled = false;
   document.getElementById('ai-input').focus();
@@ -474,37 +342,21 @@ window.sendAI = async function(){
 
 function addMsg(role, text){
   var msgs = document.getElementById('ai-msgs');
-  var ico  = role==='bot' ? '⚖️' : '👤';
-  var div  = document.createElement('div');
-  div.className = 'ai-msg ' + role;
-  div.innerHTML = `<div class="ai-msg-ico">${ico}</div><div class="ai-msg-bubble">${escHtml(text)}</div>`;
-  msgs.appendChild(div);
+  var ico = role==='bot'?'⚖️':'👤';
+  var d = document.createElement('div');
+  d.className = 'ai-msg '+role;
+  d.innerHTML = '<div class="ai-msg-ico">'+ico+'</div><div class="ai-msg-bubble">'+text.replace(/\n/g,'<br>')+'</div>';
+  msgs.appendChild(d);
   msgs.scrollTop = msgs.scrollHeight;
 }
-
 function addTyping(id){
   var msgs = document.getElementById('ai-msgs');
-  var div  = document.createElement('div');
-  div.className = 'ai-msg bot';
-  div.id = id;
-  div.innerHTML = `<div class="ai-msg-ico">⚖️</div><div class="ai-msg-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+  var d = document.createElement('div');
+  d.className='ai-msg bot'; d.id=id;
+  d.innerHTML='<div class="ai-msg-ico">⚖️</div><div class="ai-msg-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-
-function removeTyping(id){
-  var el = document.getElementById(id);
-  if(el) el.remove();
-}
-
-function escHtml(t){
-  return t
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/\n/g,'<br>');
-}
-
+function removeTyping(id){ var el=document.getElementById(id); if(el)el.remove(); }
 })();
 
 </script>
