@@ -160,7 +160,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 </div>
 
 <script>
-const ALL_Q = (function(){
+var ALL_Q = (function(){
   var raw = [
   // ══ التعاريف ══
   {t:"تعريف", q:"ما تعريف الجريمة؟",
@@ -382,6 +382,8 @@ const ALL_Q = (function(){
     }
   });
 })();
+window.ALL_Q = ALL_Q;
+
 
 var questions = [];
 var userAns = [];
