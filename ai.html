@@ -99,7 +99,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 </div>
 
 <script>
-var history = [];
+var chatHistory = [];
 var busy = false;
 
 function askSug(btn){
@@ -152,7 +152,7 @@ async function send(){
   busy = true;
 
   addMsg('user', q);
-  history.push({role:'user', content:q});
+  chatHistory.push({role:'user', content:q});
 
   var tid = 'typing_'+Date.now();
   addTyping(tid);
@@ -161,7 +161,7 @@ async function send(){
   
   removeTyping(tid);
   var ans = getSmartAnswer(q);
-  history.push({role:'assistant', content:ans});
+  chatHistory.push({role:'assistant', content:ans});
   addMsg('bot', ans);
 
   busy = false;
