@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقدمي ونتائجي</title>
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8c96a;--dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;--card:#21262d;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--orange:#e8892a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;font-size:16px;}
+.top-bar{background:var(--dark3);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
+.back-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 15px;border-radius:10px;text-decoration:none;font-family:'Segoe UI',sans-serif;font-size:.86rem;font-weight:700;transition:all .2s;}
+.back-btn:hover{border-color:var(--gold);color:var(--gold);}
+.top-title{font-size:1rem;font-weight:700;}
+.body{padding:18px;max-width:760px;margin:0 auto;}
+
+/* بطاقة الطالب */
+.student-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center;}
+.student-num{font-size:1.1rem;font-weight:700;color:var(--gold);margin-bottom:4px;font-family:monospace;}
+.student-sub{font-size:.8rem;color:var(--muted);}
+
+/* إحصائيات سريعة */
+.quick-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.qs{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;}
+.qs-num{font-size:1.9rem;font-weight:900;}
+.qs-lbl{font-size:.72rem;color:var(--muted);margin-top:4px;}
+
+/* بطاقات الاختبارات */
+.section-title{font-size:.92rem;font-weight:700;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.test-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;}
+.test-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.test-name{font-size:.95rem;font-weight:700;}
+.test-count{font-size:.76rem;color:var(--muted);background:var(--dark3);padding:3px 10px;border-radius:20px;}
+
+/* شريط التقدم */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.prog-label{font-size:.76rem;color:var(--muted);width:60px;text-align:left;flex-shrink:0;}
+.prog-bar{flex:1;height:8px;background:var(--dark3);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+.prog-score{font-size:.82rem;font-weight:700;width:38px;text-align:center;flex-shrink:0;}
+
+/* تاريخ الاختبارات */
+.history-list{margin-top:10px;}
+.h-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.h-item:last-child{border-bottom:none;}
+.h-score{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:900;flex-shrink:0;}
+.h-info{flex:1;}
+.h-date{font-size:.8rem;font-weight:700;}
+.h-meta{font-size:.72rem;color:var(--muted);}
+.h-trend{font-size:1.1rem;flex-shrink:0;}
+
+/* فارغ */
+.empty{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty .ei{font-size:2.5rem;margin-bottom:12px;}
+
+.brand-foot{text-align:center;padding:20px;font-size:.65rem;color:rgba(201,168,76,.25);letter-spacing:3px;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="index.html" class="back-btn">← الرئيسية</a>
+  <span class="top-title">📈 تقدمي ونتائجي</span>
+</div>
+
+<div class="body">
+  <div id="content"></div>
+</div>
+
+<div class="brand-foot">BY: AMAL ALFARSI</div>
+
+<script>
+var TESTS = [
+  { key:'shamil',  name:'الاختبار الشامل',    ico:'🎓', color:'#f85149' },
+  { key:'tareef',  name:'اختبار التعريفات',   ico:'📖', color:'#f85149' },
+  { key:'ta3beer', name:'اختبار التعبير',      ico:'✍️', color:'#c9a84c' },
+  { key:'qadaa',   name:'القضاء العسكري',     ico:'⚖️', color:'#58a6ff' },
+];
+
+function getColor(score){
+  if(score >= 85) return '#3fb950';
+  if(score >= 70) return '#c9a84c';
+  return '#f85149';
+}
+
+function getTrend(results){
+  if(results.length < 2) return '➡️';
+  var last = results[results.length-1].score;
+  var prev = results[results.length-2].score;
+  if(last > prev) return '📈';
+  if(last < prev) return '📉';
+  return '➡️';
+}
+
+function render(){
+  var user = localStorage.getItem('pwa_user');
+  var el   = document.getElementById('content');
+
+  if(!user || user === '__admin__'){
+    el.innerHTML = '<div class="empty"><div class="ei">🔒</div><p>سجّل الدخول أولاً لرؤية نتائجك</p></div>';
+    return;
+  }
+
+  // جلب نتائج هذا الطالب
+  var allResults = {};
+  var totalTests = 0;
+  var totalScore = 0;
+  var bestScore  = 0;
+
+  TESTS.forEach(function(t){
+    var key = 'results_' + t.key + '_' + user;
+    try{
+      var data = JSON.parse(localStorage.getItem(key) || '[]');
+      allResults[t.key] = data;
+      totalTests += data.length;
+      data.forEach(function(r){
+        totalScore += r.score;
+        if(r.score > bestScore) bestScore = r.score;
+      });
+    }catch(e){
+      allResults[t.key] = [];
+    }
+  });
+
+  var avgScore = totalTests > 0 ? Math.round(totalScore / totalTests) : 0;
+
+  var html = '';
+
+  // بطاقة الطالب
+  html += '<div class="student-card">';
+  html += '<div class="student-num">' + user + '</div>';
+  html += '<div class="student-sub">سجلات الطالب</div>';
+  html += '</div>';
+
+  // إحصائيات سريعة
+  html += '<div class="quick-stats">';
+  html += '<div class="qs"><div class="qs-num" style="color:var(--gold)">' + totalTests + '</div><div class="qs-lbl">اختبار أجريته</div></div>';
+  html += '<div class="qs"><div class="qs-num" style="color:var(--green)">' + (avgScore||'—') + (avgScore?'%':'') + '</div><div class="qs-lbl">متوسط الدرجات</div></div>';
+  html += '<div class="qs"><div class="qs-num" style="color:var(--blue)">' + (bestScore||'—') + (bestScore?'%':'') + '</div><div class="qs-lbl">أفضل نتيجة</div></div>';
+  html += '</div>';
+
+  // بطاقة لكل اختبار
+  var hasAny = false;
+  TESTS.forEach(function(t){
+    var results = allResults[t.key] || [];
+    if(results.length === 0) return;
+    hasAny = true;
+
+    var latest = results[results.length-1].score;
+    var trend  = getTrend(results);
+    var avg    = Math.round(results.reduce(function(s,r){ return s+r.score; },0) / results.length);
+
+    html += '<div class="test-card">';
+    html += '<div class="test-header">';
+    html += '<div class="test-name">' + t.ico + ' ' + t.name + '</div>';
+    html += '<div class="test-count">' + results.length + ' ' + (results.length===1?'اختبار':'اختبارات') + '</div>';
+    html += '</div>';
+
+    // شريط آخر نتيجة
+    html += '<div class="prog-row">';
+    html += '<div class="prog-label">آخر نتيجة</div>';
+    html += '<div class="prog-bar"><div class="prog-fill" style="width:'+latest+'%;background:'+getColor(latest)+'"></div></div>';
+    html += '<div class="prog-score" style="color:'+getColor(latest)+'">'+latest+'%</div>';
+    html += '</div>';
+
+    // شريط المتوسط
+    html += '<div class="prog-row">';
+    html += '<div class="prog-label">المتوسط</div>';
+    html += '<div class="prog-bar"><div class="prog-fill" style="width:'+avg+'%;background:var(--blue)"></div></div>';
+    html += '<div class="prog-score" style="color:var(--blue)">'+avg+'%</div>';
+    html += '</div>';
+
+    // تاريخ الاختبارات (آخر 5)
+    html += '<div class="history-list">';
+    var recent = results.slice(-5).reverse();
+    recent.forEach(function(r, idx){
+      var c = getColor(r.score);
+      var tr = idx === 0 ? trend : '';
+      html += '<div class="h-item">';
+      html += '<div class="h-score" style="background:'+c+'22;color:'+c+';border:2px solid '+c+'">'+r.score+'%</div>';
+      html += '<div class="h-info"><div class="h-date">'+(r.date||'')+'</div><div class="h-meta">'+(r.note||'')+'</div></div>';
+      html += '<div class="h-trend">'+tr+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '</div>';
+  });
+
+  if(!hasAny){
+    html += '<div class="empty"><div class="ei">📋</div><p>لم تجرِ أي اختبار بعد</p><p style="font-size:.8rem;margin-top:8px">ابدأ اختباراً وستظهر نتائجك هنا</p></div>';
+  }
+
+  el.innerHTML = html;
+}
+
+render();
+</script>
+
+
+<script>
+/* ====================================================
+   🤖 المساعد القانوني الذكي — بوابة المذاكرة
+   by: Amal Alfarsi
+   أضف هذا الملف في كل صفحة: <script src="ai-chat.js"><\/script>
+   ==================================================== */
+
+(function(){
+'use strict';
+
+var WA_NUM = '96898981098';
+
+var css = `
+/* ── AI Chat Widget ── */
+#ai-bubble {
+  position:fixed; bottom:84px; left:18px;
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,#c9a84c,#a07820);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; z-index:9000;
+  box-shadow:0 4px 20px rgba(201,168,76,.5);
+  transition:all .3s; font-size:1.5rem;
+  border:2px solid rgba(201,168,76,.4);
+  animation:aiPulse 3s ease-in-out infinite;
+}
+#ai-bubble:hover{ transform:scale(1.1); }
+@keyframes aiPulse{
+  0%,100%{box-shadow:0 4px 20px rgba(201,168,76,.4)}
+  50%{box-shadow:0 4px 30px rgba(201,168,76,.7)}
+}
+#ai-bubble .ai-badge{
+  position:absolute; top:-4px; right:-4px;
+  width:16px; height:16px; border-radius:50%;
+  background:#3fb950; border:2px solid #0b1120;
+  font-size:8px; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:900;
+}
+
+/* ── Panel ── */
+#ai-panel {
+  position:fixed; bottom:150px; left:14px;
+  width:min(360px, calc(100vw - 28px));
+  max-height:min(540px, calc(100vh - 170px));
+  background:linear-gradient(160deg,#0f1a2e,#162035);
+  border:1.5px solid rgba(201,168,76,.3);
+  border-radius:20px; z-index:9001;
+  display:none; flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+  overflow:hidden;
+}
+#ai-panel.open{ display:flex; animation:slideUp .25s ease; }
+@keyframes slideUp{ from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* Header */
+.ai-hdr{
+  background:linear-gradient(135deg,#1a2a45,#0f1d35);
+  border-bottom:2px solid rgba(201,168,76,.3);
+  padding:13px 16px; display:flex; align-items:center; gap:10px;
+}
+.ai-hdr-ico{ font-size:1.4rem; }
+.ai-hdr-info{ flex:1; }
+.ai-hdr-title{ font-size:.9rem; font-weight:800; color:#c9a84c; }
+.ai-hdr-sub{ font-size:.68rem; color:#6a7fa8; margin-top:1px; }
+.ai-close{
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+  color:#8a9bbf; width:28px; height:28px; border-radius:50%;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  font-size:.8rem; transition:all .2s;
+}
+.ai-close:hover{ background:rgba(248,81,73,.2); color:#f85149; border-color:rgba(248,81,73,.3); }
+
+/* Messages */
+.ai-msgs{
+  flex:1; overflow-y:auto; padding:14px;
+  display:flex; flex-direction:column; gap:10px;
+}
+.ai-msgs::-webkit-scrollbar{ width:4px; }
+.ai-msgs::-webkit-scrollbar-thumb{ background:rgba(201,168,76,.25); border-radius:2px; }
+
+.ai-msg{ display:flex; gap:8px; animation:msgIn .2s ease; }
+@keyframes msgIn{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.ai-msg.user{ flex-direction:row-reverse; }
+
+.ai-msg-ico{
+  width:30px; height:30px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:.9rem;
+}
+.ai-msg.bot .ai-msg-ico{ background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.25); }
+.ai-msg.user .ai-msg-ico{ background:rgba(88,166,255,.15); border:1px solid rgba(88,166,255,.2); }
+
+.ai-msg-bubble{
+  max-width:82%; padding:10px 13px; border-radius:14px;
+  font-size:.84rem; line-height:1.75; direction:rtl;
+}
+.ai-msg.bot .ai-msg-bubble{
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09);
+  color:#dde5f2; border-radius:4px 14px 14px 14px;
+}
+.ai-msg.user .ai-msg-bubble{
+  background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1));
+  border:1px solid rgba(201,168,76,.25); color:#e8d48a;
+  border-radius:14px 4px 14px 14px;
+}
+
+/* Typing */
+.ai-typing{ display:flex; gap:5px; padding:4px 0; }
+.ai-typing span{
+  width:7px; height:7px; border-radius:50%; background:#c9a84c;
+  animation:dotBounce 1.2s ease-in-out infinite;
+}
+.ai-typing span:nth-child(2){ animation-delay:.2s; }
+.ai-typing span:nth-child(3){ animation-delay:.4s; }
+@keyframes dotBounce{
+  0%,80%,100%{ transform:scale(.6); opacity:.4; }
+  40%{ transform:scale(1); opacity:1; }
+}
+
+/* Suggestions */
+.ai-suggestions{
+  padding:0 14px 10px; display:flex; flex-wrap:wrap; gap:6px;
+}
+.ai-sug{
+  background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2);
+  color:#c9a84c; padding:5px 11px; border-radius:20px;
+  font-size:.72rem; cursor:pointer; transition:all .2s; font-family:inherit;
+}
+.ai-sug:hover{ background:rgba(201,168,76,.18); }
+
+/* Input */
+.ai-input-row{
+  padding:10px 12px; border-top:1px solid rgba(255,255,255,.08);
+  display:flex; gap:8px; align-items:flex-end;
+}
+.ai-textarea{
+  flex:1; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius:12px; color:#e2e8f4; padding:9px 12px; font-family:inherit;
+  font-size:.84rem; resize:none; max-height:100px; min-height:38px;
+  direction:rtl; line-height:1.5;
+}
+.ai-textarea:focus{ outline:none; border-color:rgba(201,168,76,.4); }
+.ai-textarea::placeholder{ color:#4a5a78; }
+.ai-send{
+  background:linear-gradient(135deg,#c9a84c,#a07820); color:#0b1120;
+  border:none; width:36px; height:36px; border-radius:10px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:1rem;
+  transition:all .2s; flex-shrink:0;
+}
+.ai-send:hover{ transform:scale(1.08); }
+.ai-send:disabled{ opacity:.4; cursor:default; transform:none; }
+`;
+
+// Inject CSS
+var s = document.createElement('style');
+s.textContent = css;
+document.head.appendChild(s);
+
+// Inject HTML
+var html = `
+<div id="ai-bubble" onclick="toggleAI()" title="المساعد القانوني">
+  🤖
+  <div class="ai-badge">AI</div>
+</div>
+
+<div id="ai-panel">
+  <div class="ai-hdr">
+    <div class="ai-hdr-ico">⚖️</div>
+    <div class="ai-hdr-info">
+      <div class="ai-hdr-title">المساعد القانوني</div>
+      <div class="ai-hdr-sub">اسأل عن أي موضوع قانوني</div>
+    </div>
+    <button class="ai-close" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="ai-msgs" id="ai-msgs">
+    <div class="ai-msg bot">
+      <div class="ai-msg-ico">⚖️</div>
+      <div class="ai-msg-bubble">مرحباً! أنا مساعدك القانوني. يمكنك سؤالي عن أي موضوع قانوني يتعلق بالقوانين العُمانية أو الاختبارات. كيف أساعدك؟</div>
+    </div>
+  </div>
+  <div class="ai-suggestions" id="ai-sugs">
+    <button class="ai-sug" onclick="askSug(this)">ما تعريف الجريمة؟</button>
+    <button class="ai-sug" onclick="askSug(this)">شروط تعيين رجل الشرطة</button>
+    <button class="ai-sug" onclick="askSug(this)">أركان الزواج في الأحوال الشخصية</button>
+    <button class="ai-sug" onclick="askSug(this)">عقوبة التجسس في السلم</button>
+  </div>
+  <div class="ai-input-row">
+    <textarea class="ai-textarea" id="ai-input" placeholder="اكتب سؤالك هنا..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI();}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+    <button class="ai-send" id="ai-send-btn" onclick="sendAI()">➤</button>
+  </div>
+</div>
+`;
+
+var wrap = document.createElement('div');
+wrap.innerHTML = html;
+document.body.appendChild(wrap);
+
+// ── State ──
+var history = [];
+var busy = false;
+
+window.toggleAI = function(){
+  var panel = document.getElementById('ai-panel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')){
+    document.getElementById('ai-input').focus();
+  }
+};
+
+window.askSug = function(btn){
+  document.getElementById('ai-input').value = btn.textContent;
+  document.getElementById('ai-sugs').style.display = 'none';
+  sendAI();
+};
+
+window.sendAI = async function(){
+  if(busy) return;
+  var inp = document.getElementById('ai-input');
+  var q   = inp.value.trim();
+  if(!q) return;
+
+  inp.value = '';
+  inp.style.height = 'auto';
+  document.getElementById('ai-sugs').style.display = 'none';
+  document.getElementById('ai-send-btn').disabled = true;
+  busy = true;
+
+  addMsg('user', q);
+  history.push({role:'user', content:q});
+
+  // Typing indicator
+  var typingId = 'typing_' + Date.now();
+  addTyping(typingId);
+
+  try {
+    // Gemini API - مجاني
+    var GEMINI_KEY = 'AQ.Ab8RN6JJRlhznmYbUgKqYHvlpsOQhKrgKaLsuzvj009mhqbhDg';
+    var geminiMessages = history.map(function(m){
+      return { role: m.role==='assistant'?'model':'user', parts:[{text:m.content}] };
+    });
+    var res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system_instruction: { parts:[{text:'أنت مساعد قانوني متخصص في القوانين العُمانية. أجب بالعربية الفصحى بشكل مختصر وواضح. اذكر رقم المادة إذا أمكن.'}] },
+        contents: geminiMessages
+      })
+    });
+
+    removeTyping(typingId);
+
+    var data = await res.json();
+    var answer = '';
+    if(data.candidates && data.candidates[0]){
+      answer = data.candidates[0].content.parts[0].text || 'عذراً، لم أتمكن من الإجابة.';
+    } else if(data.error){
+      answer = 'عذراً، حدث خطأ: ' + (data.error.message||'');
+    } else {
+      answer = 'عذراً، لم أتمكن من الإجابة.';
+    }
+
+    history.push({role:'assistant', content:answer});
+    addMsg('bot', answer);
+
+  } catch(e){
+    removeTyping(typingId);
+    addMsg('bot', 'عذراً، حدث خطأ في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.');
+  }
+
+  busy = false;
+  document.getElementById('ai-send-btn').disabled = false;
+  document.getElementById('ai-input').focus();
+};
+
+function addMsg(role, text){
+  var msgs = document.getElementById('ai-msgs');
+  var ico  = role==='bot' ? '⚖️' : '👤';
+  var div  = document.createElement('div');
+  div.className = 'ai-msg ' + role;
+  div.innerHTML = `<div class="ai-msg-ico">${ico}</div><div class="ai-msg-bubble">${escHtml(text)}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTyping(id){
+  var msgs = document.getElementById('ai-msgs');
+  var div  = document.createElement('div');
+  div.className = 'ai-msg bot';
+  div.id = id;
+  div.innerHTML = `<div class="ai-msg-ico">⚖️</div><div class="ai-msg-bubble"><div class="ai-typing"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping(id){
+  var el = document.getElementById(id);
+  if(el) el.remove();
+}
+
+function escHtml(t){
+  return t
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+}
+
+})();
+
+</script>
+</body>
+</html>

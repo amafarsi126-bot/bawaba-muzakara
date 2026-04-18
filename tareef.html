@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار التعاريف والأسئلة المقالية</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+:root {
+  --navy:#1B3A6B; --blue:#2E6DB4; --light-blue:#EBF3FF;
+  --green:#1A7A4A; --light-green:#E8F7EF;
+  --red:#C0392B; --light-red:#FDECEA;
+  --gold:#B8860B; --light-gold:#FFFBEA;
+  --gray:#F4F6FA; --border:#DDE3EE;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Cairo',sans-serif;
+  background:linear-gradient(135deg,#0f2040 0%,#1B3A6B 50%,#0d3060 100%);
+  min-height:100vh; color:#222;
+  display:flex; flex-direction:column; align-items:center; padding:20px;
+}
+.container{width:100%;max-width:780px;}
+.header{text-align:center;padding:24px 0 16px;color:white;}
+.header h1{font-size:24px;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+.header p{font-size:13px;opacity:.7;margin-top:5px;}
+.card{background:white;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.25);margin-bottom:20px;animation:up .4s ease;}
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* Start */
+.start-icon{font-size:52px;text-align:center;margin-bottom:14px;}
+.start-title{font-size:22px;font-weight:900;color:var(--navy);text-align:center;margin-bottom:8px;}
+.start-sub{font-size:14px;color:#777;text-align:center;margin-bottom:24px;line-height:1.7;}
+.start-stats{display:flex;gap:10px;margin-bottom:24px;}
+.sstat{flex:1;background:var(--gray);border-radius:10px;padding:12px;text-align:center;font-size:13px;font-weight:600;color:var(--navy);}
+.sstat span{display:block;font-size:22px;font-weight:900;color:var(--blue);}
+.start-btn{width:100%;background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;border-radius:14px;padding:16px;font-family:'Cairo',sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(30,90,180,.3);}
+.start-btn:hover{transform:translateY(-2px);}
+
+/* Progress */
+.prog-wrap{background:var(--border);border-radius:99px;height:8px;margin-bottom:6px;overflow:hidden;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),#4A9FE8);border-radius:99px;transition:width .5s ease;}
+.prog-text{font-size:12px;color:#999;margin-bottom:18px;text-align:left;}
+
+/* Badge */
+.badges{margin-bottom:12px;}
+.qbadge{display:inline-block;background:var(--light-blue);color:var(--blue);font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px;margin-left:6px;}
+.tbadge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;}
+.tbadge.def{background:#FFF3E0;color:#E65100;}
+.tbadge.essay{background:#E8EAF6;color:#3949AB;}
+
+/* Question */
+.qtext{font-size:17px;font-weight:700;color:var(--navy);line-height:1.65;margin-bottom:22px;padding:14px 18px;background:var(--gray);border-radius:12px;border-right:4px solid var(--blue);}
+
+/* Options */
+.options{display:flex;flex-direction:column;gap:10px;}
+.opt{background:white;border:2px solid var(--border);border-radius:12px;padding:13px 16px;font-family:'Cairo',sans-serif;font-size:14px;font-weight:500;color:#222;cursor:pointer;text-align:right;transition:all .2s;line-height:1.5;}
+.opt:hover:not(:disabled){border-color:var(--blue);background:var(--light-blue);transform:translateX(-2px);}
+.opt.correct{background:var(--light-green)!important;border-color:var(--green)!important;color:var(--green)!important;font-weight:700;}
+.opt.wrong{background:var(--light-red)!important;border-color:var(--red)!important;color:var(--red)!important;font-weight:700;}
+.opt.show-correct{background:var(--light-green)!important;border-color:var(--green)!important;color:var(--green)!important;}
+
+/* Feedback */
+.feedback{display:none;padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;margin-top:14px;text-align:center;}
+.feedback.c{background:var(--light-green);color:var(--green);}
+.feedback.w{background:var(--light-red);color:var(--red);}
+.explain{display:none;background:var(--light-gold);border:1px solid #F0D060;border-radius:10px;padding:13px 16px;font-size:13px;color:#7B5800;margin-top:10px;line-height:1.7;}
+.next-btn{display:none;width:100%;background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;border-radius:12px;padding:13px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:14px;}
+.next-btn:hover{opacity:.9;}
+
+/* Results */
+.res-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:up .4s ease;}
+.score-circle{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.12);}
+.score-circle .num{font-size:34px;line-height:1;}
+.score-circle .out{font-size:12px;opacity:.8;}
+.sc-ex{background:linear-gradient(135deg,#1A7A4A,#27AE60);color:white;}
+.sc-go{background:linear-gradient(135deg,#2E6DB4,#4A9FE8);color:white;}
+.sc-ok{background:linear-gradient(135deg,#E67E22,#F39C12);color:white;}
+.sc-po{background:linear-gradient(135deg,#C0392B,#E74C3C);color:white;}
+.res-title{font-size:20px;font-weight:900;color:var(--navy);margin-bottom:6px;}
+.res-msg{font-size:14px;color:#666;margin-bottom:24px;}
+.stats-row{display:flex;gap:10px;justify-content:center;margin-bottom:24px;}
+.sbox{flex:1;padding:12px;border-radius:12px;font-size:12px;font-weight:600;}
+.sbox .sn{font-size:22px;font-weight:900;display:block;}
+.sc{background:var(--light-green);color:var(--green);}
+.sw{background:var(--light-red);color:var(--red);}
+.sp{background:var(--light-blue);color:var(--blue);}
+
+/* Review */
+.rev-toggle{background:none;border:2px solid var(--border);border-radius:12px;padding:11px 18px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;width:100%;margin-bottom:10px;transition:all .2s;}
+.rev-toggle:hover{border-color:var(--blue);color:var(--blue);}
+.rev-list{display:none;text-align:right;margin-bottom:12px;}
+.ritem{padding:13px 15px;border-radius:12px;margin-bottom:8px;font-size:13px;line-height:1.6;}
+.ritem.rc{background:var(--light-green);border-right:4px solid var(--green);}
+.ritem.rw{background:var(--light-red);border-right:4px solid var(--red);}
+.ritem .rq{font-weight:700;color:var(--navy);margin-bottom:5px;}
+.ritem .ry{font-size:12px;color:#555;}
+.ritem .ra{font-size:12px;color:var(--green);font-weight:600;}
+.restart-btn{background:linear-gradient(135deg,var(--navy),var(--blue));color:white;border:none;border-radius:12px;padding:13px;font-family:'Cairo',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-top:4px;}
+.restart-btn:hover{opacity:.9;}
+.hidden{display:none;}
+footer{color:rgba(255,255,255,.35);font-size:12px;text-align:center;padding:12px 0 6px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📚 اختبار المذاكرة الشامل</h1>
+    <p>تعاريف مهمة · أسئلة مقالية</p>
+  </div>
+
+  <!-- Start -->
+  <div id="startScreen" class="card">
+    <div class="start-icon">🎯</div>
+    <div class="start-title">جاهزة للاختبار؟</div>
+    <div class="start-sub">اختبار شامل يغطي جميع التعاريف والأسئلة المقالية<br>سيتم حفظ إجاباتك وعرض مراجعة كاملة في النهاية</div>
+    <div class="start-stats">
+      <div class="sstat"><span id="totalQ">—</span>سؤال</div>
+      <div class="sstat"><span>4</span>خيارات</div>
+      <div class="sstat"><span>✓✗</span>تصحيح فوري</div>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">ابدأ الاختبار ←</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quizScreen" class="hidden">
+    <div class="card">
+      <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+      <div class="prog-text" id="progText"></div>
+      <div class="badges">
+        <span class="qbadge" id="qBadge"></span>
+        <span class="tbadge" id="tBadge"></span>
+      </div>
+      <div class="qtext" id="qText"></div>
+      <div class="options" id="opts"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="explain" id="explain"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">السؤال التالي ←</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsScreen" class="hidden">
+    <div class="res-card">
+      <div class="score-circle" id="scoreCircle">
+        <span class="num" id="scoreNum"></span>
+        <span class="out" id="scoreOut"></span>
+      </div>
+      <div class="res-title" id="resTitle"></div>
+      <div class="res-msg" id="resMsg"></div>
+      <div class="stats-row">
+        <div class="sbox sc"><span class="sn" id="stC"></span>صحيح ✓</div>
+        <div class="sbox sw"><span class="sn" id="stW"></span>خطأ ✗</div>
+        <div class="sbox sp"><span class="sn" id="stP"></span>النسبة</div>
+      </div>
+      <button class="rev-toggle" onclick="toggleRev()">📋 عرض مراجعة الإجابات</button>
+      <div class="rev-list" id="revList"></div>
+      <button class="restart-btn" onclick="restartQuiz()">🔄 إعادة الاختبار</button>
+    </div>
+  </div>
+
+  <footer>by: Amal Alfarsi</footer>
+</div>
+
+<script>
+const ALL = [
+  // ══ التعاريف ══
+  {t:"تعريف", q:"ما تعريف الجريمة؟",
+   c:"كل فعل أو امتناع عن فعل يعاقب عليه القانون",
+   o:["كل فعل أو امتناع عن فعل يعاقب عليه القانون","إخطار يقدمه شخص للجهات المختصة","مخالفة لأوامر الرؤساء","البحث عن الجاني وتقديمه للمحاكمة"],
+   e:"الجريمة = فعل أو امتناع + يعاقب عليه القانون."},
+  {t:"تعريف", q:"ما تعريف البلاغ؟",
+   c:"إخطار يقدمه شخص إلى الجهات المختصة للإبلاغ عن جريمة أو حادث أو واقعة عرضية",
+   o:["تقدم من المجني عليه ضد الجاني","إخطار يقدمه شخص إلى الجهات المختصة للإبلاغ عن جريمة أو حادث أو واقعة عرضية","مواجهة المدعى عليه بأدلة معينة","إجراء احتياطي وقتي لتأكيد التهمة"],
+   e:"البلاغ يقدمه أي شخص، أما الشكوى فمن المجني عليه فقط."},
+  {t:"تعريف", q:"ما تعريف الشكوى؟",
+   c:"تقدم من المجني عليه أو وكيله الشرعي ضد الجاني",
+   o:["إخطار يقدمه أي شخص عن جريمة","تقدم من المجني عليه أو وكيله الشرعي ضد الجاني","أمر من جهة قضائية لتوقيف شخص","إجراء للبحث عن الجاني"],
+   e:"الشكوى خاصة بالمجني عليه أو وكيله الشرعي."},
+  {t:"تعريف", q:"ما تعريف الحبس الاحتياطي؟",
+   c:"إجراء احتياطي وقتي يوضع بموجبه المتهم في مكان معين بأمر من جهة قضائية مختصة للمدة المقررة قانوناً للتأكد من ثبوت التهمة",
+   o:["عقوبة نهائية تصدر بحق المتهم","إجراء احتياطي وقتي يوضع بموجبه المتهم في مكان معين بأمر من جهة قضائية مختصة للمدة المقررة قانوناً للتأكد من ثبوت التهمة","تحديد إقامة المنتسب بحراسة في مكان يحدده القائد","إيقاف الولاية الوظيفية مؤقتاً"],
+   e:"الحبس الاحتياطي مؤقت وبأمر قضائي للتحقق من التهمة."},
+  {t:"تعريف", q:"ما تعريف الانضباط؟",
+   c:"التحكم الذاتي الذي يمارسه الإنسان على نفسه لتكييف سلوكه وفق قواعد مقررة اقتضتها طبيعة العمل",
+   o:["العقوبة المنصوص عليها في قانون الشرطة","التحكم الذاتي الذي يمارسه الإنسان على نفسه لتكييف سلوكه وفق قواعد مقررة اقتضتها طبيعة العمل","مجموعة من القواعد القانونية التي تحدد الجرائم","إجراء من إجراءات التفتيش الإداري"],
+   e:"الانضباط = تحكم ذاتي + تكييف السلوك + طبيعة العمل."},
+  {t:"تعريف", q:"ما تعريف مسرح الجريمة؟",
+   c:"المكان أو مجموعة من الأمكنة التي مارس فيها الجاني نشاطه الإجرامي وما قد يحتوي على أدلة وآثار",
+   o:["مكان احتجاز المتهم بأمر قضائي","مكان تنفيذ حكم السجن","المكان أو مجموعة من الأمكنة التي مارس فيها الجاني نشاطه الإجرامي وما قد يحتوي على أدلة وآثار","مقر عمل رجل الشرطة"],
+   e:"مسرح الجريمة = موقع النشاط الإجرامي + الأدلة والآثار."},
+  {t:"تعريف", q:"ما تعريف الإيقاف عن العمل؟",
+   c:"إسقاط الولاية الوظيفية لرجل الشرطة مؤقتاً",
+   o:["إنهاء خدمة رجل الشرطة نهائياً","إسقاط الولاية الوظيفية لرجل الشرطة مؤقتاً","تحديد إقامة المنتسب بحراسة","الحبس في مكان معين بأمر قضائي"],
+   e:"الإيقاف عن العمل مؤقت وليس إنهاءً للخدمة."},
+  {t:"تعريف", q:"ما تعريف التحفظ العسكري؟",
+   c:"تحديد إقامة منتسب الشرطة بحراسة أو بدونها في مكان يحدده القائد المعني",
+   o:["إيقاف الولاية الوظيفية مؤقتاً","الحبس الاحتياطي بأمر قضائي","تحديد إقامة منتسب الشرطة بحراسة أو بدونها في مكان يحدده القائد المعني","الفصل من الخدمة بمرسوم سلطاني"],
+   e:"التحفظ العسكري يحدده القائد المعني وقد يكون بحراسة أو بدونها."},
+  {t:"تعريف", q:"ما تعريف التفتيش القضائي؟",
+   c:"إجراء من إجراءات التفتيش قد تسفر عنه نتائج أو أدلة تدين المتهم",
+   o:["إجراء إداري لا يلزم فيه أمر تفتيش","إجراء من إجراءات التفتيش قد تسفر عنه نتائج أو أدلة تدين المتهم","البحث بجسم المتهم للحصول على أدلة مادية","مشاهدة مكان الجريمة وتوصيفه"],
+   e:"التفتيش القضائي يهدف للحصول على أدلة تدين المتهم."},
+  {t:"تعريف", q:"ما تعريف الدفاع الشرعي؟",
+   c:"استعمال القوة اللازمة والضرورية لدفع خطر حال وغير مشروع يهدد بجريمة ضد النفس والمال",
+   o:["استعمال القوة في جميع الأحوال","إجراء يتخذه رجل الشرطة لتأمين الممتلكات","استعمال القوة اللازمة والضرورية لدفع خطر حال وغير مشروع يهدد بجريمة ضد النفس والمال","مقاومة أوامر الرؤساء عند الإكراه"],
+   e:"الدفاع الشرعي: قوة ضرورية + خطر حال + غير مشروع."},
+  {t:"تعريف", q:"ما تعريف الرشوة؟",
+   c:"اتجار الموظف بأعمال وظيفته بطلبه أو قبوله مقابل القيام بعمل أو الامتناع عنه أو تأخير إجرائه",
+   o:["سرقة الموظف للمال الموكول إليه","الاستيلاء على المال العام من قبل الموظف","اتجار الموظف بأعمال وظيفته بطلبه أو قبوله مقابل القيام بعمل أو الامتناع عنه أو تأخير إجرائه","أخذ مال الغير المنقول بصورة غير شرعية"],
+   e:"الرشوة = اتجار بالوظيفة + طلب أو قبول + مقابل عمل أو امتناع."},
+  {t:"تعريف", q:"ما تعريف الاختلاس؟",
+   c:"سرقة الموظف للمال الموكول إليه",
+   o:["أخذ مال الغير بصورة غير شرعية","اتجار الموظف بأعمال وظيفته","سرقة الموظف للمال الموكول إليه","الاستيلاء على المال العام بالقوة"],
+   e:"الاختلاس خاص بالموظف والمال المؤتمن عليه."},
+  {t:"تعريف", q:"ما تعريف الدعوى العمومية؟",
+   c:"مجموعة من الإجراءات التي يقوم بها الادعاء العام للتحقق من وقوع جريمة ونسبتها إلى فاعلها وتقديمه للقضاء",
+   o:["مجموعة من الإجراءات التي يقوم بها الادعاء العام للتحقق من وقوع جريمة ونسبتها إلى فاعلها وتقديمه للقضاء","هيئة مستقلة تمثل المجتمع في القضايا","الإجراءات التي تتخذها سلطات الضبط عند وقوع الجريمة","مجموعة القواعد التي تحدد الجرائم والعقوبات"],
+   e:"الدعوى العمومية = إجراءات الادعاء العام + إثبات الجريمة + تقديم المتهم للقضاء."},
+  {t:"تعريف", q:"ما تعريف الضبط القضائي؟",
+   c:"مجموعة من الإجراءات التي تتخذها سلطات الضبط القضائي عند وقوع الجريمة بهدف البحث عن مرتكبيها والقبض عليهم وتقديمهم للمحاكمة ثم تنفيذ العقوبة",
+   o:["هيئة مستقلة تمثل المجتمع في الدعاوى","مجموعة من الإجراءات التي تتخذها سلطات الضبط القضائي عند وقوع الجريمة بهدف البحث عن مرتكبيها والقبض عليهم وتقديمهم للمحاكمة ثم تنفيذ العقوبة","إجراء احتياطي وقتي بأمر قضائي","مشاهدة مكان الجريمة وتوصيفه"],
+   e:"الضبط القضائي: بحث + قبض + تقديم للمحاكمة + تنفيذ العقوبة."},
+  {t:"تعريف", q:"ما تعريف الحادث المروري؟",
+   c:"كل واقعة ينجم عنها وفاة أو إصابة أو خسارة في الممتلكات بدون قصد سابق بسبب قائد المركبة أو الطريق أو المركبات",
+   o:["كل جريمة تقع على الطريق العام","كل واقعة ينجم عنها وفاة أو إصابة أو خسارة في الممتلكات بدون قصد سابق بسبب قائد المركبة أو الطريق أو المركبات","اصطدام مركبتين فقط","كل مخالفة مرورية يرتكبها السائق"],
+   e:"الحادث المروري: بدون قصد سابق + وفاة أو إصابة أو خسارة مادية."},
+  {t:"تعريف", q:"ما تعريف الطب الشرعي؟",
+   c:"وضع جميع الخبرات الطبية في خدمة العدالة والقانون",
+   o:["علم يرشد المحقق إلى كيفية السير في تتبع الجريمة","وضع جميع الخبرات الطبية في خدمة العدالة والقانون","مشاهدة مكان الجريمة وتوصيفه","البحث بجسم المتهم للحصول على أدلة"],
+   e:"الطب الشرعي = خبرات طبية + خدمة العدالة والقانون."},
+  {t:"تعريف", q:"ما تعريف الوالء الوظيفي؟",
+   c:"الوفاء والانتماء والإخلاص والتفاني وحب العمل في الجهاز الذي ينتمي إليه رجل الشرطة",
+   o:["الشعور بالمسؤولية الأمنية تجاه الذات والآخرين","القيام بواجبات العمل في الأوقات المحددة","الوفاء والانتماء والإخلاص والتفاني وحب العمل في الجهاز الذي ينتمي إليه رجل الشرطة","طاعة أوامر الرؤساء فقط"],
+   e:"الوالء الوظيفي: وفاء + انتماء + إخلاص + تفانٍ + حب العمل."},
+  {t:"تعريف", q:"ما تعريف الحدث الجانح؟",
+   c:"كل ذكر أو أنثى لم يكمل سن الثامنة عشر وبلغ سنة التاسعة وارتكب جريمة يعاقب عليها القانون",
+   o:["كل من يحبس احتياطياً بأمر من سلطة مختصة","كل ذكر أو أنثى لم يكمل سن الثامنة عشر وبلغ سنة التاسعة وارتكب جريمة يعاقب عليها القانون","كل من يسجن تنفيذاً لحكم قضائي","من لم يبلغ سن الرشد القانوني بغض النظر عن الجريمة"],
+   e:"الحدث الجانح: من 9 سنوات إلى دون 18 سنة + ارتكاب جريمة."},
+  {t:"تعريف", q:"ما تعريف الاستجواب؟",
+   c:"مواجهة المدعى عليه بأدلة معينة متوفرة لدى سلطة التحقيق",
+   o:["إيقاف شخص حامت حوله الشبهات لاستجلاء أمره","إجراء البحث والتحري عن الجريمة","مواجهة المدعى عليه بأدلة معينة متوفرة لدى سلطة التحقيق","مشاهدة مكان الجريمة وتصويره"],
+   e:"الاستجواب: مواجهة المدعى عليه + أدلة + سلطة التحقيق."},
+  {t:"تعريف", q:"ما تعريف الإيقاف (الاستيقاف)؟",
+   c:"مجرد إيقاف لشخص حامت حوله الشبهات في مكانه أو أثناء سيره لاستجلاء أمره",
+   o:["القبض على المتهم وتقديمه للمحاكمة","حبس الشخص احتياطياً بأمر قضائي","مجرد إيقاف لشخص حامت حوله الشبهات في مكانه أو أثناء سيره لاستجلاء أمره","التفتيش القضائي على المتهم"],
+   e:"الاستيقاف أخف من القبض، وهو مجرد إيقاف لاستجلاء الأمر."},
+
+  // ══ الأسئلة المقالية ══
+  {t:"مقالي", q:"كم هو الحد الأدنى والأقصى لعقوبة الخصم من الراتب في الجرائم الانضباطية البسيطة؟",
+   c:"لا تقل عن يومين ولا تتجاوز 9 أيام",
+   o:["لا تقل عن يوم ولا تتجاوز 5 أيام","لا تقل عن يومين ولا تتجاوز 9 أيام","لا تقل عن 10 أيام ولا تتجاوز 30 يوماً","لا تقل عن 30 يوماً ولا تزيد عن 3 أشهر"],
+   e:"البسيطة: الخصم من الراتب من 2 إلى 9 أيام."},
+  {t:"مقالي", q:"ما هي عقوبة السجن في الثكنة للجرائم الانضباطية البسيطة؟",
+   c:"لا تقل عن يوم واحد ولا تتجاوز 6 أيام بنصف الراتب",
+   o:["لا تقل عن 5 أيام ولا تتجاوز 15 يوماً","لا تقل عن يوم ولا تتجاوز 5 أيام","لا تقل عن يوم واحد ولا تتجاوز 6 أيام بنصف الراتب","لا تقل عن 7 أيام ولا تتجاوز 15 يوماً"],
+   e:"السجن في الثكنة للجرائم البسيطة: 1 إلى 6 أيام بنصف الراتب."},
+  {t:"مقالي", q:"كم هو الحد الأدنى والأقصى للخصم من الراتب في الجرائم الانضباطية الجسيمة؟",
+   c:"لا تقل عن 10 أيام ولا تتجاوز 30 يوماً",
+   o:["لا تقل عن يومين ولا تتجاوز 9 أيام","لا تقل عن 10 أيام ولا تتجاوز 30 يوماً","لا تقل عن 30 يوماً ولا تزيد عن 3 أشهر","لا تقل عن 5 أيام ولا تتجاوز 20 يوماً"],
+   e:"الجسيمة: الخصم من 10 إلى 30 يوماً."},
+  {t:"مقالي", q:"ما هي عقوبة الحجز بالثكنة في الجرائم الانضباطية الجسيمة؟",
+   c:"لا تقل عن 7 أيام ولا تتجاوز 15 يوماً",
+   o:["لا تقل عن يوم ولا تتجاوز 6 أيام","لا تقل عن 5 أيام ولا تتجاوز 30 يوماً","لا تقل عن 7 أيام ولا تتجاوز 15 يوماً","لا تقل عن 30 يوماً ولا تزيد عن 3 أشهر"],
+   e:"الحجز بالثكنة للجسيمة: 7 إلى 15 يوماً."},
+  {t:"مقالي", q:"ما هي عقوبات الجرائم الانضباطية الجسيمة جداً فيما يخص السجن؟",
+   c:"لا تقل عن 30 يوماً ولا تزيد عن 3 أشهر",
+   o:["لا تقل عن 10 أيام ولا تتجاوز 30 يوماً","لا تقل عن 30 يوماً ولا تزيد عن 3 أشهر","لا تقل عن 5 أيام ولا تتجاوز 15 يوماً","لا تقل عن 3 أشهر ولا تزيد عن 6 أشهر"],
+   e:"الجسيمة جداً: السجن من 30 يوماً إلى 3 أشهر."},
+  {t:"مقالي", q:"أي من التالي يُعدّ شرطاً من شروط تعيين رجل الشرطة؟",
+   c:"ألا يكون قد تزوج بغير عمانية بعد أول فبراير 1986 دون الحصول على تصريح",
+   o:["أن يكون حاصلاً على مؤهل جامعي فأعلى","أن يكون متزوجاً","ألا يكون قد تزوج بغير عمانية بعد أول فبراير 1986 دون الحصول على تصريح","ألا يقل عمره عن 25 سنة"],
+   e:"التاريخ المهم: أول فبراير 1986 — تاريخ اشتراط التصريح للزواج بغير عمانية."},
+  {t:"مقالي", q:"أي من الأسباب التالية تنتهي بها خدمة رجل الشرطة؟",
+   c:"الزواج بغير عمانية دون الحصول على تصريح",
+   o:["الحصول على إجازة اعتيادية","ترقية المنتسب إلى رتبة أعلى","الزواج بغير عمانية دون الحصول على تصريح","الانتداب إلى جهة حكومية أخرى"],
+   e:"من أسباب إنهاء الخدمة: الزواج بغير عمانية بدون تصريح، فقدان الجنسية، الوفاة، وغيرها."},
+  {t:"مقالي", q:"أي من التالي هي صلاحيات سلطة التصديق على قرارات العقوبات الانضباطية؟",
+   c:"إلغاء كل العقوبات أو بعضها",
+   o:["تشديد العقوبة الانضباطية","فرض غرامة مالية إضافية","إلغاء كل العقوبات أو بعضها","إيقاف المنتسب نهائياً عن العمل"],
+   e:"صلاحيات التصديق: تخفيض أو استبدال أو إيقاف تنفيذ أو إلغاء العقوبات أو إحالتها للمحكمة."},
+  {t:"مقالي", q:"ما هي أنواع الحوادث المرورية؟",
+   c:"تدهور - دهس - اصطدام (بجسم ثابت أو مركبة)",
+   o:["تدهور - دهس - اصطدام (بجسم ثابت أو مركبة)","انقلاب - تصادم - احتراق","تدهور - انزلاق - تصادم","انقلاب - دهس - اشتعال"],
+   e:"أنواع الحوادث المرورية ثلاثة: تدهور، دهس، اصطدام."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من دوافع ارتكاب الجريمة؟",
+   c:"عوامل نفسية",
+   o:["عوامل مناخية","عوامل نفسية","الوضع الأسري فقط","الموقع الجغرافي"],
+   e:"دوافع الجريمة: فسيولوجية، ثقافية، اجتماعية، نفسية."},
+  {t:"مقالي", q:"ما ترتيب مراحل ارتكاب الجريمة بشكل صحيح؟",
+   c:"التفكير والتصميم ← التخطيط ← التحضير ← الشروع ← التنفيذ",
+   o:["التحضير ← التخطيط ← التفكير ← الشروع ← التنفيذ","التفكير والتصميم ← التخطيط ← التحضير ← الشروع ← التنفيذ","التخطيط ← التفكير ← الشروع ← التحضير ← التنفيذ","التنفيذ ← التخطيط ← التحضير ← الشروع ← التفكير"],
+   e:"المراحل بالترتيب: تفكير وتصميم ← تخطيط ← تحضير ← شروع ← تنفيذ."},
+  {t:"مقالي", q:"ما هي مدة صلاحية رخصة القيادة الخفيفة؟",
+   c:"عشر سنوات",
+   o:["ست سنوات","ثلاث سنوات","عشر سنوات","خمس عشرة سنة"],
+   e:"الخفيفة والدراجة الآلية: 10 سنوات. الثقيلة والمعدات: 6 سنوات."},
+  {t:"مقالي", q:"ما هي مدة صلاحية رخصة القيادة الثقيلة؟",
+   c:"ست سنوات",
+   o:["عشر سنوات","ست سنوات","ثماني سنوات","أربع سنوات"],
+   e:"الثقيلة والمعدات: 6 سنوات. الخفيفة والدراجة الآلية: 10 سنوات."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من أنواع الجريمة حسب الوصف القانوني؟",
+   c:"جناية - جنحة - قباحة (مخالفة)",
+   o:["جناية - جنحة - مخالفة مرورية","جناية - جنحة - قباحة (مخالفة)","جريمة بسيطة - جريمة جسيمة - جريمة جسيمة جداً","جناية - تعدٍّ - مخالفة"],
+   e:"أنواع الجريمة حسب الوصف القانوني: جناية - جنحة - قباحة (مخالفة)."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من الجرائم المخلة بسير العدالة؟",
+   c:"شهادة الزور",
+   o:["السرقة بالإكراه","التحرش اللفظي","شهادة الزور","الإيذاء البسيط"],
+   e:"الجرائم المخلة بسير العدالة تشمل: الافتراء، كتم الجرائم، الهوية الكاذبة، شهادة الزور، التقارير الفنية الكاذبة، وغيرها."},
+  {t:"مقالي", q:"ما هي موانع الترقية؟",
+   c:"إحالة المنتسب للتحقيق - وقف منتسب الشرطة - الإحالة للمحاكمة",
+   o:["الإصابة بمرض مزمن - السفر خارج البلاد","إحالة المنتسب للتحقيق - وقف منتسب الشرطة - الإحالة للمحاكمة","الغياب يوماً واحداً - التأخر عن العمل","طلب الإجازة الاستثنائية"],
+   e:"موانع الترقية ثلاثة: الإحالة للتحقيق، الوقف عن العمل، الإحالة للمحاكمة."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من العقوبات التي توقعها المحاكم العسكرية؟",
+   c:"الإعدام - السجن المطلق - السجن - الغرامة",
+   o:["الإعدام - النفي - الغرامة","الإعدام - السجن المطلق - السجن - الغرامة","التنزيل في الرتبة - الفصل - السجن","الحبس الاحتياطي - الغرامة - السجن"],
+   e:"عقوبات المحاكم العسكرية: إعدام - سجن مطلق - سجن - غرامة."},
+  {t:"مقالي", q:"أي من الأسباب التالية يُسقط الحكم الجزائي أو يمنع تنفيذه؟",
+   c:"العفو العام",
+   o:["إصابة المتهم بمرض","العفو العام","تغيير مكان المتهم","رفض المجني عليه تسوية الخلاف"],
+   e:"أسباب إسقاط الحكم أو منع تنفيذه: العفو العام، العفو الخاص، انتهاء مدة العقوبة، موت المتهم، تنازل المجني عليه."},
+  {t:"مقالي", q:"في أي حالة يصدر الادعاء العام بالحبس الاحتياطي؟",
+   c:"إذا كانت القضية معاقباً عليها بالإعدام",
+   o:["إذا طلب المجني عليه ذلك","إذا كانت القضية معاقباً عليها بالإعدام","إذا كان المتهم من غير المقيمين","إذا رفض المتهم الحضور طوعاً"],
+   e:"حالات الحبس الاحتياطي: ضرورة التحقيق، القضية معاقب عليها بالإعدام، الخوف من فرار المتهم، عدم وجود إقامة معروفة."},
+  {t:"مقالي", q:"ما هي أركان الجريمة؟",
+   c:"ركن مادي - ركن معنوي - ركن قانوني",
+   o:["ركن مادي - ركن معنوي","ركن مادي - ركن معنوي - ركن قانوني","ركن مادي - ركن قانوني فقط","ركن معنوي - ركن اجتماعي - ركن قانوني"],
+   e:"أركان الجريمة ثلاثة: مادي + معنوي + قانوني."},
+  {t:"مقالي", q:"ما هي مراحل الدعوى العمومية بالترتيب الصحيح؟",
+   c:"مرحلة التحريات - مرحلة الاتهام - مرحلة المحاكمة",
+   o:["مرحلة التحقيق - مرحلة القبض - مرحلة التنفيذ","مرحلة التحريات - مرحلة الاتهام - مرحلة المحاكمة","مرحلة البلاغ - مرحلة التحقيق - مرحلة الحكم","مرحلة الضبط - مرحلة الاتهام - مرحلة العقوبة"],
+   e:"مراحل الدعوى العمومية: تحريات ← اتهام ← محاكمة."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من اختصاصات الادعاء العام؟",
+   c:"الإشراف على مأموري الضبط القضائي فيما يتعلق بأعمال وظيفتهم",
+   o:["تعيين الضباط بعد موافقة جلالة السلطان","إصدار قانون الشرطة","الإشراف على مأموري الضبط القضائي فيما يتعلق بأعمال وظيفتهم","تحديد إقامة المنتسب بأمر من القائد"],
+   e:"اختصاصات الادعاء العام: رفع الدعاوى، الإشراف على مأموري الضبط، التحقيق في القضايا، ملاحقة المجرمين، تطبيق القوانين."},
+  {t:"مقالي", q:"من هم مأمورو الضبط القضائي؟",
+   c:"أعضاء الادعاء العام - ضباط الشرطة - موظفو جهات الأمن العام - الولاة ونوابهم - كل من تخوله القوانين",
+   o:["ضباط الشرطة فقط","رجال الشرطة والجمارك فقط","أعضاء الادعاء العام - ضباط الشرطة - موظفو جهات الأمن العام - الولاة ونوابهم - كل من تخوله القوانين","أعضاء الادعاء العام والقضاء فقط"],
+   e:"مأمورو الضبط القضائي: الادعاء العام + ضباط الشرطة + أمن عام + ولاة + كل من يخوله القانون."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من الإجراءات الاحتياطية التي تُتخذ في مواجهة منتسب الشرطة عند ارتكابه جريمة؟",
+   c:"التحفظ العسكري - الإيقاف عن العمل - الحبس الاحتياطي",
+   o:["الفصل من الخدمة - التنزيل في الرتبة","التحفظ العسكري - الإيقاف عن العمل - الحبس الاحتياطي","الإحالة للمحاكمة مباشرة","التوبيخ - الإنذار - الخصم من الراتب"],
+   e:"الإجراءات الاحتياطية ثلاثة: التحفظ العسكري + الإيقاف عن العمل + الحبس الاحتياطي."},
+  {t:"مقالي", q:"ما هي أنواع عمليات الشرطة؟",
+   c:"عمليات عادية - عمليات الحراسة والتأمين - العمليات الخاصة",
+   o:["عمليات ميدانية - عمليات مكتبية - عمليات طارئة","عمليات عادية - عمليات الحراسة والتأمين - العمليات الخاصة","عمليات أمنية - عمليات جنائية - عمليات مرورية","عمليات وقائية - عمليات ردعية - عمليات تنفيذية"],
+   e:"أنواع عمليات الشرطة ثلاثة: عادية + حراسة وتأمين + خاصة."},
+  {t:"مقالي", q:"أي من التالي يُعدّ من أسباب تبرير الجريمة؟",
+   c:"الدفاع المشروع - طاعة القانون - حالة الضرورة",
+   o:["الجهل بالقانون - الإكراه المادي","الدفاع المشروع - طاعة القانون - حالة الضرورة","الإغراء - الضغط النفسي","الفقر - الحاجة - الاضطرار الاجتماعي"],
+   e:"أسباب التبرير ثلاثة: الدفاع المشروع + طاعة القانون + حالة الضرورة."},
+  {t:"مقالي", q:"أي من التالي هو أحد أنواع الجوازات في سلطنة عُمان؟",
+   c:"الجواز الدبلوماسي",
+   o:["الجواز الأخضر","الجواز الدبلوماسي","جواز الإقامة","جواز العمل"],
+   e:"أنواع الجوازات: خاص - دبلوماسي - للمهمة - عادي."},
+  {t:"مقالي", q:"ما هي أهداف الضبط القضائي؟",
+   c:"البحث عن مرتكبي الجرائم والقبض عليهم - تقديم المتهمين للمحاكمة - تنفيذ العقوبات",
+   o:["تطبيق القوانين الإدارية فقط","البحث عن مرتكبي الجرائم والقبض عليهم - تقديم المتهمين للمحاكمة - تنفيذ العقوبات","الإشراف على الانتخابات وضبط الحشود","منع الجرائم قبل وقوعها فقط"],
+   e:"أهداف الضبط القضائي ثلاثة: بحث وقبض + تقديم للمحاكمة + تنفيذ العقوبات."},
+  {t:"مقالي", q:"أي من التالي هو أحد الحالات التي لا تصنف ضمن الحوادث المرورية البسيطة؟",
+   c:"إذا كان أحد أطراف الحادث لا يحمل رخصة قيادة",
+   o:["إذا كان الحادث في الليل","إذا كان أحد أطراف الحادث لا يحمل رخصة قيادة","إذا كانت المركبة قديمة","إذا كان السائق من خارج المنطقة"],
+   e:"الحوادث غير البسيطة: سكر أو مخدر، بلا رخصة، وفيات أو إصابات، مركبة غير مؤمنة، أضرار بممتلكات عامة."},
+  {t:"مقالي", q:"ما هي صور التعبير عن الوالء الوظيفي؟",
+   c:"طاعة أوامر الرؤساء - الإخلاص - الغيرة عن الجهاز - الوفاء - التفاني - التضحية - السرية في العمل",
+   o:["الحضور في الوقت المحدد فقط","الإنجاز السريع للمهام","طاعة أوامر الرؤساء - الإخلاص - الغيرة عن الجهاز - الوفاء - التفاني - التضحية - السرية في العمل","التنافس مع الزملاء لإثبات الكفاءة"],
+   e:"صور الوالء الوظيفي سبعة: طاعة + إخلاص + غيرة + وفاء + تفانٍ + تضحية + سرية."},
+  {t:"مقالي", q:"ما هي أنواع العقوبات الأصلية؟",
+   c:"الإرهابية - التأديبية - التكديرية",
+   o:["الإرهابية - التأديبية - التكديرية","الجسيمة - البسيطة - الجسيمة جداً","الجنائية - الانضباطية - الإدارية","الإعدام - السجن - الغرامة"],
+   e:"أنواع العقوبات الأصلية ثلاثة: إرهابية + تأديبية + تكديرية."}
+];
+
+let questions = [];
+let current = 0;
+let correct = 0;
+let wrong = 0;
+let history = [];
+let answered = false;
+
+function shuffle(arr) {
+  for(let i = arr.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function startQuiz() {
+  questions = shuffle([...ALL]);
+  current = 0; correct = 0; wrong = 0; history = [];
+  document.getElementById('totalQ').textContent = questions.length;
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('quizScreen').classList.remove('hidden');
+  showQ();
+}
+
+function showQ() {
+  answered = false;
+  const q = questions[current];
+  const total = questions.length;
+
+  document.getElementById('progBar').style.width = ((current/total)*100)+'%';
+  document.getElementById('progText').textContent = `السؤال ${current+1} من ${total}`;
+  document.getElementById('qBadge').textContent = `س ${current+1}`;
+
+  const tb = document.getElementById('tBadge');
+  tb.textContent = q.t;
+  tb.className = 'tbadge ' + (q.t === 'تعريف' ? 'def' : 'essay');
+
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('explain').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  const shuffled = shuffle([...q.o]);
+  shuffled.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = opt;
+    btn.onclick = () => answer(btn, opt, q);
+    opts.appendChild(btn);
+  });
+}
+
+function answer(btn, chosen, q) {
+  if(answered) return;
+  answered = true;
+  const isCorrect = chosen === q.c;
+
+  document.querySelectorAll('.opt').forEach(b => {
+    b.disabled = true;
+    if(b.textContent === q.c) b.classList.add('correct');
+    else if(b === btn && !isCorrect) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.textContent = isCorrect ? '✅ إجابة صحيحة!' : '❌ إجابة خاطئة';
+  fb.className = 'feedback ' + (isCorrect ? 'c' : 'w');
+  fb.style.display = 'block';
+
+  if(q.e) {
+    const ex = document.getElementById('explain');
+    ex.textContent = '💡 ' + q.e;
+    ex.style.display = 'block';
+  }
+
+  if(isCorrect) correct++; else wrong++;
+  history.push({ q: q.q, chosen, correct: q.c, isCorrect });
+
+  const nb = document.getElementById('nextBtn');
+  nb.style.display = 'block';
+  nb.textContent = current < questions.length-1 ? 'السؤال التالي ←' : 'عرض النتيجة ←';
+}
+
+function nextQ() {
+  current++;
+  if(current < questions.length) showQ();
+  else showResults();
+}
+
+function showResults() {
+  document.getElementById('quizScreen').classList.add('hidden');
+  document.getElementById('resultsScreen').classList.remove('hidden');
+
+  const total = questions.length;
+  const pct = Math.round((correct/total)*100);
+  const sc = document.getElementById('scoreCircle');
+  sc.className = 'score-circle ' + (pct>=85?'sc-ex':pct>=70?'sc-go':pct>=50?'sc-ok':'sc-po');
+  document.getElementById('scoreNum').textContent = correct;
+  document.getElementById('scoreOut').textContent = 'من '+total;
+  document.getElementById('stC').textContent = correct;
+  document.getElementById('stW').textContent = wrong;
+  document.getElementById('stP').textContent = pct+'%';
+
+  const msgs = [
+    [85,'ممتاز! 🌟','أداء رائع، استمري على هذا المستوى!'],
+    [70,'جيد جداً! 👍','قريبة من الإتقان، راجعي الأخطاء وستكوني ممتازة!'],
+    [50,'جيد 📚','تحتاجين مراجعة إضافية للمادة.'],
+    [0,'تحتاجين مراجعة 💪','لا تيأسي! راجعي المادة مجدداً وأعيدي الاختبار.']
+  ];
+  const [,title,msg] = msgs.find(([min]) => pct >= min);
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resMsg').textContent = msg;
+
+  // Build review
+  const revList = document.getElementById('revList');
+  revList.innerHTML = '';
+  history.forEach((h,i) => {
+    const d = document.createElement('div');
+    d.className = 'ritem ' + (h.isCorrect ? 'rc' : 'rw');
+    d.innerHTML = `<div class="rq">س${i+1}: ${h.q}</div>`
+      + (h.isCorrect
+        ? `<div class="ra">✓ إجابتك صحيحة: ${h.chosen}</div>`
+        : `<div class="ry">✗ إجابتك: ${h.chosen}</div><div class="ra">✓ الصحيح: ${h.correct}</div>`);
+    revList.appendChild(d);
+  });
+}
+
+function toggleRev() {
+  const rl = document.getElementById('revList');
+  const btn = document.querySelector('.rev-toggle');
+  if(rl.style.display === 'block') {
+    rl.style.display = 'none';
+    btn.textContent = '📋 عرض مراجعة الإجابات';
+  } else {
+    rl.style.display = 'block';
+    btn.textContent = '▲ إخفاء المراجعة';
+  }
+}
+
+function restartQuiz() {
+  document.getElementById('resultsScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('hidden');
+  document.getElementById('totalQ').textContent = ALL.length;
+}
+
+document.getElementById('totalQ').textContent = ALL.length;
+</script>
+</body>
+</html>

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برنامج التعبير</title>
+<meta name="theme-color" content="#0d1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="برنامج التعبير">
+<link rel="manifest" id="pwa-manifest">
+<style>
+:root{--gold:#c9a84c;--gold-light:#e8c96a;--dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;--card:#21262d;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--green:#3fb950;--red:#f85149;--blue:#58a6ff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;display:flex;flex-direction:column;}
+#splash{position:fixed;inset:0;background:radial-gradient(ellipse at center,#101828,#0d1117);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .8s ease;}
+#splash.hide{opacity:0;pointer-events:none;}
+.sp-icon{font-size:3rem;margin-bottom:14px;animation:spFloat 2s ease-in-out infinite;}
+.sp-title{font-family:'Traditional Arabic','Times New Roman',serif;font-size:1.8rem;color:var(--gold);opacity:0;animation:fadeUp .8s .4s forwards;}
+.sp-line{width:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto;animation:growLine 1s .6s forwards;}
+.sp-name{font-size:.72rem;color:var(--muted);letter-spacing:4px;opacity:0;animation:fadeUp .8s .9s forwards;}
+.sp-dots{display:flex;gap:7px;margin-top:26px;opacity:0;animation:fadeUp .5s 1.3s forwards;}
+.sp-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:dotP 1.2s ease-in-out infinite;}
+.sp-dot:nth-child(2){animation-delay:.2s}.sp-dot:nth-child(3){animation-delay:.4s}
+@keyframes spFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-10px) rotate(5deg)}}
+@keyframes growLine{to{width:180px}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes dotP{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.screen{display:none;flex:1;flex-direction:column;}
+.screen.active{display:flex;}
+.cpage{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at top,#1a2540,var(--dark) 70%);}
+.lbox{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px 24px;max-width:420px;width:100%;text-align:center;}
+.lbox-icon{font-size:2.8rem;margin-bottom:12px;animation:pulse 3s ease-in-out infinite;}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 8px rgba(201,168,76,.3))}50%{filter:drop-shadow(0 0 20px rgba(201,168,76,.6))}}
+.lbox-title{font-size:1.4rem;font-weight:900;margin-bottom:4px;}
+.lbox-sub{color:var(--muted);font-size:.82rem;margin-bottom:26px;}
+.flabel{font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-align:right;}
+.finput{width:100%;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:13px 16px;border-radius:10px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:1rem;direction:rtl;margin-bottom:14px;transition:border-color .2s;text-align:center;}
+.finput:focus{outline:none;border-color:var(--gold);}
+.finput::placeholder{color:var(--border);}
+.lbtn{width:100%;background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;padding:13px;border-radius:12px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(201,168,76,.3);}
+.lbtn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.lerr{color:var(--red);font-size:.8rem;margin-top:10px;min-height:18px;}
+.ghost-btn{background:transparent;border:none;color:var(--muted);font-size:.7rem;cursor:pointer;font-family:'Segoe UI',sans-serif;margin-top:14px;padding:4px;}
+.ghost-btn:hover{color:var(--gold);}
+.brand-b{margin-top:22px;font-size:.65rem;letter-spacing:3px;color:rgba(201,168,76,.35);}
+.pending-box{background:var(--card);border:1px solid rgba(201,168,76,.3);border-radius:18px;padding:36px 24px;max-width:420px;width:100%;text-align:center;}
+.pending-icon{font-size:3rem;margin-bottom:14px;}
+.pending-title{font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:8px;}
+.pending-msg{color:var(--muted);font-size:.85rem;line-height:2;margin-bottom:20px;}
+.pending-num{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:10px;font-family:monospace;font-size:1rem;color:var(--gold);margin-bottom:16px;}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:var(--dark);border:none;padding:13px;border-radius:12px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;width:100%;margin-bottom:10px;}
+.back-btn2{width:100%;background:var(--dark3);border:1px solid var(--border);color:var(--muted);padding:10px;border-radius:10px;font-family:'Segoe UI',sans-serif;font-size:.84rem;cursor:pointer;}
+#home-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;background:radial-gradient(ellipse at top,#1a2540,var(--dark) 70%);}
+.hw{font-size:.82rem;color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
+.home-pen{font-size:3.5rem;filter:drop-shadow(0 0 20px rgba(201,168,76,.4));animation:pulse 3s ease-in-out infinite;}
+.home-title{font-size:1.9rem;font-weight:900;margin:8px 0 4px;}
+.home-sub{color:var(--muted);font-size:.88rem;margin-bottom:32px;}
+.home-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:560px;width:100%;}
+.hcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 12px;cursor:pointer;transition:all .3s;}
+.hcard:hover{transform:translateY(-4px);border-color:var(--gold);}
+.hcard-ico{font-size:1.8rem;margin-bottom:8px;}
+.hcard-name{font-size:.88rem;font-weight:700;margin-bottom:4px;}
+.hcard-desc{font-size:.7rem;color:var(--muted);}
+.home-brand{margin-top:26px;font-size:.68rem;letter-spacing:3px;color:rgba(201,168,76,.4);}
+.home-btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center;}
+.lo-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:20px;font-family:'Segoe UI',sans-serif;font-size:.72rem;cursor:pointer;}
+.lo-btn:hover{border-color:var(--red);color:var(--red);}
+.adm-btn{display:none;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:7px 16px;border-radius:20px;font-family:'Segoe UI',sans-serif;font-size:.72rem;cursor:pointer;}
+#admin-panel{background:var(--dark2);}
+.adm-body{padding:18px;max-width:600px;margin:0 auto;width:100%;flex:1;}
+.adm-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px;}
+.adm-card-title{font-size:.9rem;font-weight:700;color:var(--gold);margin-bottom:12px;}
+.approve-btn{background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);color:var(--green);padding:5px 14px;border-radius:8px;font-size:.78rem;cursor:pointer;font-family:'Segoe UI',sans-serif;margin-left:6px;}
+.del-btn{background:rgba(248,81,73,.12);border:1px solid rgba(248,81,73,.3);color:var(--red);padding:4px 12px;border-radius:8px;font-size:.74rem;cursor:pointer;font-family:'Segoe UI',sans-serif;}
+.num-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.num-row:last-child{border-bottom:none;}
+.num-val{font-size:.86rem;font-family:monospace;}
+.add-btn{width:100%;background:var(--green);color:var(--dark);border:none;padding:12px;border-radius:10px;font-family:'Segoe UI',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;}
+.add-msg{font-size:.78rem;margin-top:8px;min-height:18px;text-align:center;}
+.badge-p{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);padding:2px 8px;border-radius:10px;font-size:.68rem;margin-left:6px;}
+.scr-hdr{background:var(--dark3);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10;}
+.back-btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:.8rem;}
+.scr-title{font-size:1rem;font-weight:700;}
+#learn{background:var(--dark2);}
+.learn-body{padding:18px;max-width:800px;margin:0 auto;width:100%;flex:1;}
+.tabs{display:flex;gap:7px;margin-bottom:20px;flex-wrap:wrap;}
+.tab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 13px;border-radius:20px;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:.78rem;transition:all .2s;}
+.tab.on,.tab:hover{background:var(--gold);color:var(--dark);border-color:var(--gold);font-weight:700;}
+.lcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:13px;animation:fadeIn .4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ltitle{font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:12px;}
+.lbody{line-height:2.1;font-size:.9rem;}
+.lbody p{margin-bottom:10px;}
+.lbody strong{color:var(--gold-light);}
+.ex-box{background:var(--dark3);border:1px solid var(--border);border-right:3px solid var(--gold);border-radius:8px;padding:13px;margin:11px 0;font-family:'Traditional Arabic','Times New Roman',serif;font-size:1.02rem;line-height:2.2;color:#c8d3e0;}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700;margin:2px;}
+.bb{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid rgba(88,166,255,.3);}
+.bg{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+.bv{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);}
+.strow{display:flex;margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.stp{flex:1;padding:12px;text-align:center;font-size:.78rem;}
+.stp .sn{font-size:1.3rem;font-weight:900;}
+.stp .sm{font-weight:700;margin:3px 0;}
+.stp .sd{font-size:.68rem;color:var(--muted);}
+.si{background:rgba(88,166,255,.1)}.sb{background:rgba(201,168,76,.1)}.sc{background:rgba(63,185,80,.1)}
+#exam{background:var(--dark2);}
+.exam-body{padding:18px;max-width:800px;margin:0 auto;width:100%;flex:1;}
+.exam-setup{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:26px;text-align:center;}
+.exam-setup h2{font-size:1.3rem;margin-bottom:6px;}
+.exam-setup p{color:var(--muted);margin-bottom:22px;font-size:.84rem;}
+.tsel{background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:10px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:.9rem;width:100%;margin-bottom:13px;direction:rtl;}
+.trow{display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
+.tchip{background:var(--dark3);border:2px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:30px;cursor:pointer;font-family:'Segoe UI','Tahoma',sans-serif;font-size:.84rem;transition:all .2s;}
+.tchip.on{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold);font-weight:700;}
+.start-btn{background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;padding:12px 42px;border-radius:40px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,.3);}
+.timer-bar{background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:55px;z-index:9;}
+.timer-num{font-size:1.5rem;font-weight:900;color:var(--gold);min-width:72px;text-align:center;}
+.timer-num.urgent{color:var(--red);animation:blink .8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.pbar{flex:1;height:5px;background:var(--dark3);border-radius:3px;margin:0 14px;overflow:hidden;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px;transition:width 1s linear;}
+.wbadge{font-size:.8rem;color:var(--muted);padding:4px 10px;background:var(--dark3);border-radius:20px;border:1px solid var(--border);}
+.topic-disp{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:13px 16px;margin-bottom:13px;font-family:'Traditional Arabic','Times New Roman',serif;font-size:1.1rem;color:var(--gold-light);text-align:center;line-height:1.8;}
+.hints-bar{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:13px;font-size:.76rem;color:var(--muted);line-height:1.9;}
+.hints-bar span{color:var(--gold);font-weight:700;}
+.essay-ta{width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Traditional Arabic','Times New Roman',serif;font-size:1.08rem;line-height:2.4;padding:18px;resize:vertical;direction:rtl;min-height:360px;transition:border-color .2s;}
+.essay-ta:focus{outline:none;border-color:var(--gold);}
+.essay-ta::placeholder{color:var(--border);font-size:.84rem;font-family:'Segoe UI','Tahoma',sans-serif;}
+.submit-btn{width:100%;background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;padding:13px;border-radius:10px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:1rem;font-weight:900;cursor:pointer;margin-top:9px;}
+#results{background:var(--dark2);}
+.res-body{padding:18px;max-width:800px;margin:0 auto;width:100%;flex:1;}
+.score-circle{width:128px;height:128px;border-radius:50%;border:5px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:14px auto;background:radial-gradient(circle,rgba(201,168,76,.1),transparent);box-shadow:0 0 36px rgba(201,168,76,.2);}
+.score-num{font-size:2.4rem;font-weight:900;color:var(--gold);}
+.score-lbl{font-size:.68rem;color:var(--muted);}
+.cgrid{display:grid;gap:8px;margin:14px 0;}
+.citem{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;}
+.ci-name{font-size:.84rem;font-weight:700;flex:1;}
+.ci-bar{width:90px;height:5px;background:var(--dark3);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.ci-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.ci-score{font-size:.84rem;font-weight:700;min-width:36px;text-align:center;}
+.sbox{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;}
+.sbox h3{font-size:.92rem;font-weight:700;margin-bottom:12px;color:var(--gold);}
+.srow{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:10px;margin-bottom:8px;border:1px solid var(--border);}
+.srow.good{background:rgba(63,185,80,.06);border-color:rgba(63,185,80,.25);}
+.srow.warn{background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.25);}
+.srow.bad{background:rgba(248,81,73,.06);border-color:rgba(248,81,73,.25);}
+.srow-info{flex:1;}
+.srow-name{font-weight:700;font-size:.86rem;margin-bottom:3px;}
+.srow-error{font-size:.78rem;color:var(--red);margin-bottom:3px;}
+.srow-fix{font-size:.78rem;color:var(--green);}
+.srow-ok{font-size:.78rem;color:var(--green);}
+.fbbox{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;}
+.fbbox h3{font-size:.92rem;font-weight:700;margin-bottom:10px;color:var(--gold);}
+.fbitem{display:flex;gap:8px;margin-bottom:8px;font-size:.84rem;line-height:1.9;}
+.essay-review{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:16px;margin:12px 0;font-family:'Traditional Arabic','Times New Roman',serif;font-size:1rem;line-height:2.3;color:#c8d3e0;white-space:pre-wrap;}
+.arow{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap;}
+.abtn{flex:1;min-width:120px;padding:11px;border-radius:10px;font-family:'Segoe UI','Tahoma',sans-serif;font-size:.86rem;font-weight:700;cursor:pointer;border:none;}
+.abtn-p{background:var(--gold);color:var(--dark);}
+.abtn-s{background:var(--card);color:var(--text);border:1px solid var(--border);}
+#history{background:var(--dark2);}
+.hist-body{padding:18px;max-width:800px;margin:0 auto;width:100%;flex:1;}
+.hitem{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.hscore{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:900;flex-shrink:0;}
+.htopic{font-weight:700;font-size:.88rem;margin-bottom:3px;}
+.hmeta{font-size:.72rem;color:var(--muted);}
+.empty-h{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-h .ei{font-size:2.5rem;margin-bottom:12px;}
+.brand-foot{text-align:center;padding:14px;font-size:.6rem;color:rgba(201,168,76,.25);letter-spacing:3px;}
+#ios-hint{display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:8888;background:var(--card);border:1px solid rgba(201,168,76,.4);border-radius:14px;padding:14px 18px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.ios-h-title{font-size:.9rem;font-weight:700;color:var(--gold);margin-bottom:6px;}
+.ios-h-steps{font-size:.78rem;color:var(--muted);line-height:2;}
+.ios-h-close{margin-top:10px;background:transparent;border:1px solid var(--border);color:var(--muted);padding:7px 20px;border-radius:8px;cursor:pointer;font-family:'Segoe UI',sans-serif;font-size:.76rem;}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:480px){.home-cards{grid-template-columns:1fr;max-width:300px}.strow{flex-direction:column}.trow{gap:6px}.home-title{font-size:1.5rem}}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="sp-icon">✍️</div>
+  <div class="sp-title">برنامج التعبير</div>
+  <div class="sp-line"></div>
+  <div class="sp-name">BY: AMAL ALFARSI</div>
+  <div class="sp-dots"><div class="sp-dot"></div><div class="sp-dot"></div><div class="sp-dot"></div></div>
+</div>
+
+<div id="ios-hint">
+  <div class="ios-h-title">📲 ثبّت التطبيق على iPhone</div>
+  <div class="ios-h-steps">١. اضغط زر المشاركة ⬆️<br>٢. اختر <strong style="color:var(--gold)">Add to Home Screen</strong><br>٣. اضغط Add</div>
+  <button class="ios-h-close" onclick="document.getElementById('ios-hint').style.display='none'">فهمت ✓</button>
+</div>
+
+<div id="login" class="screen">
+  <div class="cpage">
+    <div class="lbox">
+      <div class="lbox-icon">✍️</div>
+      <div class="lbox-title">برنامج التعبير</div>
+      <div class="lbox-sub">أدخل رقمك للدخول</div>
+      <div class="flabel">الرقم المدني أو رقم الهاتف</div>
+      <input type="text" id="login-input" class="finput" placeholder="أدخل رقمك هنا" inputmode="numeric" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="lbtn" id="login-btn" onclick="doLogin()">دخول ←</button>
+      <div class="lerr" id="login-err"></div>
+      <button class="ghost-btn" onclick="goScreen('admin-login')">🔐 دخول المشرفة</button>
+      <div class="brand-b">BY: AMAL ALFARSI</div>
+    </div>
+  </div>
+</div>
+
+<div id="admin-login" class="screen">
+  <div class="cpage">
+    <div class="lbox">
+      <div class="lbox-icon">🔐</div>
+      <div class="lbox-title">دخول المشرفة</div>
+      <div class="lbox-sub">أدخلي كلمة السر</div>
+      <input type="password" id="admin-pass" class="finput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()">
+      <button class="lbtn" onclick="doAdminLogin()">دخول ←</button>
+      <div class="lerr" id="admin-err"></div>
+      <button class="ghost-btn" onclick="goScreen('login')">← رجوع</button>
+    </div>
+  </div>
+</div>
+
+<div id="pending" class="screen">
+  <div class="cpage" style="background:radial-gradient(ellipse at top,#1a2530,var(--dark) 70%)">
+    <div class="pending-box">
+      <div class="pending-icon">⏳</div>
+      <div class="pending-title">طلبك في الانتظار</div>
+      <div class="pending-msg">تم إرسال رقمك للمشرفة.<br>بعد الموافقة ادخل رقمك مرة ثانية.</div>
+      <div class="pending-num" id="pending-num"></div>
+      <a id="wa-link" href="#" class="wa-btn" target="_blank">📲 تواصل مع المشرفة على واتساب</a>
+      <button class="back-btn2" onclick="goScreen('login');document.getElementById('login-input').value='';">← رجوع</button>
+    </div>
+  </div>
+</div>
+
+<div id="home" class="screen">
+  <div id="home-inner">
+    <div class="hw" id="hw"></div>
+    <div class="home-pen">✍️</div>
+    <h1 class="home-title">برنامج التعبير</h1>
+    <p class="home-sub">تعلّم واختبر مهاراتك في كتابة التعبير للاختبارات الرسمية</p>
+    <div class="home-cards">
+      <div class="hcard" onclick="goTo('learn')"><div class="hcard-ico">📖</div><div class="hcard-name">تعلّم التعبير</div><div class="hcard-desc">البنية والأسلوب والأمثلة</div></div>
+      <div class="hcard" onclick="goTo('exam')"><div class="hcard-ico">📝</div><div class="hcard-name">اختبار تجريبي</div><div class="hcard-desc">اكتب وقيّم نفسك</div></div>
+      <div class="hcard" onclick="goTo('history')"><div class="hcard-ico">📊</div><div class="hcard-name">السجل</div><div class="hcard-desc">نتائجك وتطورك</div></div>
+    </div>
+    <div class="home-brand">by: Amal Alfarsi</div>
+    <div class="home-btns">
+      <button class="lo-btn" onclick="logout()">تسجيل الخروج</button>
+      <button class="adm-btn" id="adm-btn" onclick="openAdmin()">🔐 إدارة</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-panel" class="screen">
+  <div class="scr-hdr">
+    <button class="back-btn" onclick="goScreen('home')">← رجوع</button>
+    <span class="scr-title">🔐 إدارة المستخدمين</span>
+    <button class="back-btn" onclick="loadAdmin()" style="margin-right:auto;background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.3);color:var(--gold)">🔄 تحديث</button>
+  </div>
+  <div class="adm-body">
+    <div class="adm-card">
+      <div class="adm-card-title">⏳ طلبات الانضمام <span id="pending-count" style="color:var(--red)"></span></div>
+      <div id="pending-list"><p style="color:var(--muted);font-size:.82rem">لا توجد طلبات</p></div>
+    </div>
+    <div class="adm-card">
+      <div class="adm-card-title">➕ إضافة رقم مباشرة</div>
+      <input type="text" id="new-num" class="finput" placeholder="أدخل الرقم" inputmode="numeric" style="margin-bottom:10px">
+      <button class="add-btn" onclick="addNumDirect()">✅ إضافة</button>
+      <div class="add-msg" id="add-msg"></div>
+    </div>
+    <div class="adm-card">
+      <div class="adm-card-title">✅ الأرقام المعتمدة</div>
+      <div id="approved-list"></div>
+    </div>
+  </div>
+  <div class="brand-foot">BY: AMAL ALFARSI</div>
+</div>
+
+<div id="learn" class="screen">
+  <div class="scr-hdr">
+    <button class="back-btn" onclick="goTo('home')">← رجوع</button>
+    <span class="scr-title">📖 تعلّم التعبير</span>
+  </div>
+  <div class="learn-body">
+    <div class="tabs">
+      <button class="tab on" onclick="showL('structure',this)">البنية</button>
+      <button class="tab" onclick="showL('intro',this)">المقدمة</button>
+      <button class="tab" onclick="showL('body',this)">الجوهر</button>
+      <button class="tab" onclick="showL('conc',this)">الخاتمة</button>
+      <button class="tab" onclick="showL('tips',this)">نصائح</button>
+      <button class="tab" onclick="showL('intros',this)">مقدمات جاهزة</button>
+      <button class="tab" onclick="showL('concs',this)">خواتيم جاهزة</button>
+    </div>
+    <div id="L-structure">
+      <div class="lcard"><div class="ltitle">🏗️ بنية التعبير الصحيحة</div><div class="lbody">
+        <p>التعبير الجيد يقوم على ثلاثة أركان:</p>
+        <div class="strow">
+          <div class="stp si"><div class="sn" style="color:var(--blue)">١</div><div class="sm">المقدمة</div><div class="sd">فقرة واحدة<br>20–25%</div></div>
+          <div class="stp sb"><div class="sn" style="color:var(--gold)">٢</div><div class="sm">الجوهر</div><div class="sd">فقرتان أو أكثر<br>55–65%</div></div>
+          <div class="stp sc"><div class="sn" style="color:var(--green)">٣</div><div class="sm">الخاتمة</div><div class="sd">فقرة واحدة<br>15–20%</div></div>
+        </div>
+        <p><strong>القاعدة الذهبية:</strong> مقدمة + نقطتان رئيسيتان + خاتمة = تعبير مكتمل.</p>
+      </div></div>
+      <div class="lcard"><div class="ltitle">📐 معايير التقييم</div><div class="lbody">
+        <p><span class="badge bb">المحتوى والأفكار</span> عمق الأفكار وثراؤها</p>
+        <p><span class="badge bg">التنظيم والبنية</span> وضوح المقدمة والجوهر والخاتمة</p>
+        <p><span class="badge bv">اللغة والأسلوب</span> سلامة اللغة وجمال التعبير</p>
+        <p><span class="badge bb">الأدلة والشواهد</span> آيات وأحاديث وأمثلة</p>
+        <p><span class="badge bg">الإملاء والخط</span> الكتابة الصحيحة المرتبة</p>
+      </div></div>
+    </div>
+    <div id="L-intro" style="display:none"><div class="lcard"><div class="ltitle">🎯 كيف تكتب المقدمة؟</div><div class="lbody"><p>✦ <strong>الافتتاحية:</strong> آية كريمة أو حديث شريف أو سؤال استنهاضي</p><p>✦ <strong>الربط:</strong> انتقل بسلاسة من الافتتاحية إلى الموضوع</p><p>✦ <strong>الإعلان:</strong> اذكر صراحةً ما ستتحدث عنه</p><div class="ex-box">قال الله تعالى: ﴿وَأَعِدُّوا لَهُمْ مَا اسْتَطَعْتُمْ مِنْ قُوَّةٍ﴾، وإن كانت هذه الآية الكريمة قد نزلت في شأن الجهاد، فإنها تنطوي على معنى أشمل؛ ومن هنا يأتي حديثنا عن أهمية الانضباط في المؤسسة الأمنية.</div><p><strong>تنبيه:</strong> لا تطوّل المقدمة — فقرة واحدة متماسكة تكفي.</p></div></div></div>
+    <div id="L-body" style="display:none"><div class="lcard"><div class="ltitle">💡 كيف تكتب الجوهر؟</div><div class="lbody"><p>✦ <strong>ابدأ الفقرة</strong> بجملة رئيسية تعلن فكرتها</p><p>✦ <strong>اشرح وفصّل</strong> الفكرة بأسلوبك الخاص</p><p>✦ <strong>استشهد</strong> بدليل: آية / حديث / مثال واقعي</p><p>✦ <strong>اختم الفقرة</strong> بجملة تربطها بالموضوع</p><div class="ex-box">ولعلّ أبرز ما يُميّز المؤسسة الأمنية انضباطها العسكري الراسخ؛ فالضبط والربط ليس قيداً بل منهج يُرسّخ الولاء ويصون النظام. وفي ذلك يقول المولى عزّ وجلّ: ﴿إِنَّ اللَّهَ يُحِبُّ الَّذِينَ يُقَاتِلُونَ فِي سَبِيلِهِ صَفًّا﴾.</div></div></div></div>
+    <div id="L-conc" style="display:none"><div class="lcard"><div class="ltitle">🎬 كيف تكتب الخاتمة؟</div><div class="lbody"><p>✦ <strong>التلخيص:</strong> إشارة موجزة للنقاط الرئيسية</p><p>✦ <strong>التوصية:</strong> اقترح حلاً أو وجّه نداء</p><p>✦ <strong>الختام المؤثر:</strong> بيت شعر أو دعاء أو جملة تشجيعية</p><div class="ex-box">وخلاصة القول، إن الأمن الوطني ثمرة تستوجب رعاية مستمرة؛ فلنكن جميعاً درعاً واقية لهذا الوطن الغالي، سائلين الله أن يحفظ عُمان بلداً آمناً مستقراً.</div></div></div></div>
+    <div id="L-tips" style="display:none"><div class="lcard"><div class="ltitle">⚡ نصائح ذهبية للاختبار</div><div class="lbody"><p>✦ <strong>اقرأ الموضوع مرتين</strong> قبل أن تكتب كلمة واحدة</p><p>✦ <strong>خطّط في ذهنك:</strong> حدد نقطتين قبل البدء</p><p>✦ <strong>وزّع الوقت:</strong> 10% تخطيط / 70% كتابة / 20% مراجعة</p><p>✦ <strong>الحد الأدنى:</strong> لا تنزل عن 200 كلمة في الاختبار الرسمي</p></div></div><div class="lcard"><div class="ltitle">🔗 أدوات الربط الأسلوبية</div><div class="lbody"><p><strong>للإضافة:</strong> فضلاً عن ذلك / علاوةً على ذلك / كما وأن</p><p><strong>للتأكيد:</strong> ولا يخفى أن / ومما لا شك فيه / ومن الثابت</p><p><strong>للتعليل:</strong> إذ إن / نظراً لأن / لما في ذلك من</p><p><strong>للختم:</strong> وخلاصة القول / وفي المحصلة / ومما سبق يتضح</p></div></div></div>
+    <div id="L-intros" style="display:none"><div class="lcard"><div class="ltitle">📌 مقدمات جاهزة</div></div><div class="lcard"><div class="ltitle">① مقدمة دينية عامة</div><div class="ex-box">قال الله تعالى: ﴿إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ﴾، وفي هذا النداء الرباني دعوةٌ صريحة إلى البناء والعطاء، وما موضوعنا اليوم إلا تجسيدٌ لهذه القيم النبيلة في واقعنا المعاصر.</div></div><div class="lcard"><div class="ltitle">② مقدمة بسؤال استنهاضي</div><div class="ex-box">ما الذي يجعل الأمم عظيمة والشعوب راسخة؟ إنه ذلك البناء المتكامل الذي تتضافر فيه جهود الفرد والمجتمع والدولة. وإن موضوع حديثنا اليوم ليكشف عن ركيزة أساسية من ركائز هذا البناء.</div></div><div class="lcard"><div class="ltitle">③ مقدمة تاريخية وطنية</div><div class="ex-box">لم تقم الحضارات الإنسانية على الصدفة، بل كانت وليدة إرادة راسخة وعمل متواصل. وما نشهده في سلطنة عُمان تحت القيادة الرشيدة لحضرة صاحب الجلالة — حفظه الله — خيرُ شاهد على هذه الحقيقة.</div></div></div>
+    <div id="L-concs" style="display:none"><div class="lcard"><div class="ltitle">📌 خواتيم جاهزة</div></div><div class="lcard"><div class="ltitle">① خاتمة دعوية</div><div class="ex-box">وخلاصة القول، إن ما تطرقنا إليه دعوة صادقة إلى العمل والبناء. ولنا في قول المصطفى ﷺ نبراسٌ يضيء الطريق، سائلين الله التوفيق لعُمان قيادةً وشعباً.</div></div><div class="lcard"><div class="ltitle">② خاتمة وطنية</div><div class="ex-box">وفي ختام المطاف، يظل الوطن أمانةً في أعناقنا جميعاً. اللهم أدم على عُمان أمنها واستقرارها.</div></div><div class="lcard"><div class="ltitle">③ خاتمة تلخيصية</div><div class="ex-box">ومما سبق يتضح أن موضوعنا يمثل ركيزةً حضارية راسخة؛ فلنتكاتف جميعاً، فالأوطان لا تُبنى إلا بعقول نيّرة وأيدٍ مخلصة وقلوب محبّة.</div></div></div>
+  </div>
+  <div class="brand-foot">BY: AMAL ALFARSI</div>
+</div>
+
+<div id="exam" class="screen">
+  <div class="scr-hdr">
+    <button class="back-btn" onclick="examBack()">← رجوع</button>
+    <span class="scr-title">📝 الاختبار التجريبي</span>
+  </div>
+  <div class="exam-body" id="eSetup">
+    <div class="exam-setup">
+      <h2>اختر موضوعك ووقتك</h2>
+      <p>سيبدأ المؤقت فور الضغط على "ابدأ الاختبار"</p>
+      <select class="tsel" id="tsel">
+        <option value="">-- اختر موضوعاً --</option>
+        <option>الضبط والربط العسكري دعامة الأمن الوطني</option>
+        <option>دور الشرطة في تحقيق رؤية عُمان 2040</option>
+        <option>الأمن الإلكتروني ومواجهة الجرائم الرقمية</option>
+        <option>دور الشرطة في أوقات الكوارث والطوارئ</option>
+        <option>الابتزاز الإلكتروني وسُبل مواجهته</option>
+        <option>غسيل الأموال وأثره على الاقتصاد الوطني</option>
+        <option>الهيدروجين الأخضر وآفاق عُمان المستقبلية</option>
+        <option>الوحدة الوطنية ركيزة الاستقرار والتنمية</option>
+        <option value="custom">موضوع آخر...</option>
+      </select>
+      <input type="text" id="cust" class="tsel" placeholder="اكتب الموضوع هنا..." style="display:none;margin-top:8px">
+      <div class="trow">
+        <button class="tchip" onclick="selT(15,this)">⏱ 15 دقيقة</button>
+        <button class="tchip on" onclick="selT(30,this)">⏱ 30 دقيقة</button>
+        <button class="tchip" onclick="selT(45,this)">⏱ 45 دقيقة</button>
+        <button class="tchip" onclick="selT(60,this)">⏱ 60 دقيقة</button>
+      </div>
+      <button class="start-btn" onclick="startExam()">ابدأ الاختبار ✶</button>
+    </div>
+  </div>
+  <div id="eActive" style="display:none;flex-direction:column;flex:1">
+    <div class="timer-bar">
+      <div class="timer-num" id="tnum">30:00</div>
+      <div class="pbar"><div class="pfill" id="pfill" style="width:100%"></div></div>
+      <div class="wbadge" id="wbadge">0 كلمة</div>
+    </div>
+    <div class="exam-body" style="display:flex;flex-direction:column">
+      <div class="topic-disp" id="tdisp"></div>
+      <div class="hints-bar">💡 اكتب تعبيرك — <span>المقدمة</span> ثم <span>الجوهر</span> ثم <span>الخاتمة</span> في نص واحد.</div>
+      <textarea id="ta" class="essay-ta" placeholder="ابدأ كتابة تعبيرك هنا..."></textarea>
+      <button class="submit-btn" onclick="submitExam()">✅ أنهِ الاختبار وشاهد النتيجة</button>
+    </div>
+  </div>
+  <div class="brand-foot">BY: AMAL ALFARSI</div>
+</div>
+
+<div id="results" class="screen">
+  <div class="scr-hdr">
+    <button class="back-btn" onclick="goTo('home')">← رجوع</button>
+    <span class="scr-title">📊 نتيجة اختبارك</span>
+  </div>
+  <div class="res-body">
+    <div style="text-align:center">
+      <div id="rtopic" style="color:var(--muted);font-size:.84rem;margin-top:12px"></div>
+      <div class="score-circle"><div class="score-num" id="rscore">0</div><div class="score-lbl">من 100</div></div>
+      <div id="rgrade" style="font-size:1.15rem;font-weight:900;margin-bottom:4px"></div>
+      <div id="rtime" style="font-size:.76rem;color:var(--muted);margin-bottom:14px"></div>
+    </div>
+    <div class="cgrid" id="cgrid"></div>
+    <div class="sbox"><h3>🔍 تحليل ترتيب الأقسام</h3><div id="sanalysis"></div></div>
+    <div class="fbbox"><h3>💬 التغذية الراجعة</h3><div id="fblist"></div></div>
+    <div class="fbbox"><h3>📄 ما كتبته</h3><div class="essay-review" id="ereview"></div></div>
+    <div class="arow">
+      <button class="abtn abtn-p" onclick="goTo('exam')">🔄 اختبار جديد</button>
+      <button class="abtn abtn-s" onclick="goTo('home')">🏠 الرئيسية</button>
+    </div>
+  </div>
+  <div class="brand-foot">BY: AMAL ALFARSI</div>
+</div>
+
+<div id="history" class="screen">
+  <div class="scr-hdr">
+    <button class="back-btn" onclick="goTo('home')">← رجوع</button>
+    <span class="scr-title">📊 سجل الاختبارات</span>
+  </div>
+  <div class="hist-body" id="hlist"></div>
+  <div class="brand-foot">BY: AMAL ALFARSI</div>
+</div>
+
+<script>
+var ADMIN_CODE = "amal2025";
+var CONTACT_WA = "96898981098";
+var GAS_URL = "https://script.google.com/macros/s/AKfycbydhsu8gWWijS9fBnXWj_AJzynhdUO464myEyPY6lD6VWpaabRm68aqcjh8g9z0JtUn/exec";
+
+var isAdmin = false;
+var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+// PWA
+(function(){
+  var m={name:"برنامج التعبير",short_name:"التعبير",start_url:"./",display:"standalone",background_color:"#0d1117",theme_color:"#0d1117",lang:"ar",dir:"rtl",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="38" fill="#0d1117"/><text x="96" y="130" font-size="110" text-anchor="middle">✍️</text></svg>'),sizes:"192x192",type:"image/svg+xml",purpose:"any maskable"}]};
+  var b=new Blob([JSON.stringify(m)],{type:'application/json'});
+  document.getElementById('pwa-manifest').href=URL.createObjectURL(b);
+})();
+
+if('serviceWorker' in navigator){
+  var sw="const C='tb-v4';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])));self.skipWaiting();});self.addEventListener('activate',e=>{self.clients.claim();});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});";
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'})),{scope:'./'}).catch(function(){});
+}
+
+// API
+function api(params, cb) {
+  var url = GAS_URL + "?" + Object.keys(params).map(function(k){ return k+"="+encodeURIComponent(params[k]); }).join("&");
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){ cb(null, d); })
+    .catch(function(e){ cb(e, null); });
+}
+
+// SPLASH
+window.addEventListener('load', function(){
+  var msg = encodeURIComponent("السلام عليكم، أرجو إضافتي في برنامج التعبير");
+  document.getElementById('wa-link').href = "https://wa.me/"+CONTACT_WA+"?text="+msg;
+
+  setTimeout(function(){
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(function(){
+      document.getElementById('splash').style.display='none';
+      enterHome('بوابة المذاكرة');
+    }, 800);
+  }, 2000);
+});
+
+function doLogin(){
+  var val = document.getElementById('login-input').value.trim().replace(/\s/g,'');
+  if(!val){ document.getElementById('login-err').textContent='الرجاء إدخال رقمك'; return; }
+  var btn = document.getElementById('login-btn');
+  btn.textContent='جاري التحقق...'; btn.disabled=true;
+  document.getElementById('login-err').textContent='';
+
+  api({action:'check', num:val}, function(err, d){
+    btn.textContent='دخول ←'; btn.disabled=false;
+    if(err||!d){ document.getElementById('login-err').textContent='خطأ في الاتصال، حاول مرة أخرى'; return; }
+    if(d.status === 'approved'){
+      localStorage.setItem('ta3beer_user', val);
+      enterHome('مرحباً — '+val);
+      if(isIOS && !isStandalone) setTimeout(function(){ document.getElementById('ios-hint').style.display='block'; }, 2000);
+    } else if(d.status === 'pending'){
+      localStorage.setItem('ta3beer_user', val);
+      showPending(val);
+    } else {
+      api({action:'request', num:val}, function(){
+        localStorage.setItem('ta3beer_user', val);
+        showPending(val);
+      });
+    }
+  });
+}
+
+function showPending(num){
+  document.getElementById('pending-num').textContent = num;
+  var msg = encodeURIComponent("السلام عليكم، أرجو إضافتي في برنامج التعبير\nرقمي: "+num);
+  document.getElementById('wa-link').href = "https://wa.me/"+CONTACT_WA+"?text="+msg;
+  goScreen('pending');
+}
+
+function doAdminLogin(){
+  var p = document.getElementById('admin-pass').value;
+  if(p === ADMIN_CODE){
+    document.getElementById('admin-pass').value='';
+    document.getElementById('admin-err').textContent='';
+    localStorage.setItem('ta3beer_user','__admin__');
+    isAdmin=true;
+    enterHome('مرحباً المشرفة');
+  } else {
+    document.getElementById('admin-err').textContent='كلمة السر غير صحيحة';
+  }
+}
+
+function logout(){
+  localStorage.removeItem('ta3beer_user');
+  isAdmin=false;
+  document.getElementById('login-input').value='';
+  document.getElementById('adm-btn').style.display='none';
+  goScreen('login');
+}
+
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goTo(id){
+  goScreen(id);
+  if(id==='history') renderH();
+  if(id==='exam') resetExam();
+}
+function enterHome(msg){
+  document.getElementById('hw').textContent = '';
+  document.getElementById('adm-btn').style.display = 'none';
+  goScreen('home');
+}
+
+// ADMIN
+function openAdmin(){ loadAdmin(); goScreen('admin-panel'); }
+
+function loadAdmin(){
+  document.getElementById('pending-list').innerHTML='<p style="color:var(--muted);font-size:.82rem">جاري التحميل...</p>';
+  document.getElementById('approved-list').innerHTML='<p style="color:var(--muted);font-size:.82rem">جاري التحميل...</p>';
+  api({action:'list'}, function(err, d){
+    if(err||!d){ document.getElementById('pending-list').innerHTML='<p style="color:var(--red)">خطأ في التحميل</p>'; return; }
+    var pending = d.pending||[], approved = d.approved||[];
+    document.getElementById('pending-count').textContent = pending.length ? '('+pending.length+')' : '';
+    document.getElementById('pending-list').innerHTML = pending.length ?
+      pending.map(function(n){ return '<div class="num-row"><span class="num-val"><span class="badge-p">جديد</span>'+n+'</span><div><button class="approve-btn" onclick="approveNum(\''+n+'\')">✅ قبول</button><button class="del-btn" onclick="rejectNum(\''+n+'\')">رفض</button></div></div>'; }).join('') :
+      '<p style="color:var(--muted);font-size:.82rem">لا توجد طلبات</p>';
+    document.getElementById('approved-list').innerHTML = approved.length ?
+      approved.map(function(n){ return '<div class="num-row"><span class="num-val">'+n+'</span><button class="del-btn" onclick="removeNum(\''+n+'\')">حذف</button></div>'; }).join('') :
+      '<p style="color:var(--muted);font-size:.82rem">لا توجد أرقام</p>';
+  });
+}
+
+function approveNum(num){ api({action:'approve',num:num}, function(){ loadAdmin(); }); }
+function rejectNum(num){ api({action:'reject',num:num}, function(){ loadAdmin(); }); }
+function removeNum(num){ api({action:'remove',num:num}, function(){ loadAdmin(); }); }
+
+function addNumDirect(){
+  var val = document.getElementById('new-num').value.trim().replace(/\s/g,'');
+  var msg = document.getElementById('add-msg');
+  if(!val){ msg.style.color='var(--red)'; msg.textContent='أدخلي الرقم أولاً'; return; }
+  api({action:'approve', num:val}, function(err, d){
+    if(err){ msg.style.color='var(--red)'; msg.textContent='خطأ في الاتصال'; return; }
+    document.getElementById('new-num').value='';
+    msg.style.color='var(--green)'; msg.textContent='✅ تمت الإضافة';
+    loadAdmin();
+    setTimeout(function(){ msg.textContent=''; }, 3000);
+  });
+}
+
+// LEARN
+function showL(id,btn){
+  document.querySelectorAll('[id^="L-"]').forEach(function(l){ l.style.display='none'; });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('L-'+id).style.display='block'; btn.classList.add('on');
+}
+
+// EXAM
+var eTimer=null,eSec=0,eTot=0,eStart=null,selMin=30;
+function selT(m,el){ selMin=m; document.querySelectorAll('.tchip').forEach(function(c){ c.classList.remove('on'); }); el.classList.add('on'); }
+document.getElementById('tsel').addEventListener('change',function(){ document.getElementById('cust').style.display=this.value==='custom'?'block':'none'; });
+function resetExam(){ clearInterval(eTimer); document.getElementById('eSetup').style.display='block'; document.getElementById('eActive').style.display='none'; document.getElementById('ta').value=''; document.getElementById('wbadge').textContent='0 كلمة'; }
+function examBack(){ if(document.getElementById('eActive').style.display!=='none'){ if(!confirm('هل تريد الخروج؟')) return; clearInterval(eTimer); resetExam(); } else goTo('home'); }
+function startExam(){
+  var tv=document.getElementById('tsel').value;
+  if(tv==='custom') tv=document.getElementById('cust').value.trim();
+  if(!tv){ alert('الرجاء اختيار موضوع أولاً'); return; }
+  eTot=selMin*60; eSec=eTot; eStart=new Date();
+  document.getElementById('tdisp').textContent=tv;
+  document.getElementById('eSetup').style.display='none';
+  document.getElementById('eActive').style.display='flex';
+  window.scrollTo(0,0); updT();
+  eTimer=setInterval(function(){ eSec--; updT(); if(eSec<=0){ clearInterval(eTimer); alert('انتهى الوقت!'); submitExam(); } },1000);
+  document.getElementById('ta').addEventListener('input',function(){ document.getElementById('wbadge').textContent=cw(document.getElementById('ta').value)+' كلمة'; });
+}
+function updT(){
+  var m=Math.floor(eSec/60).toString().padStart(2,'0'),s=(eSec%60).toString().padStart(2,'0');
+  var el=document.getElementById('tnum'); el.textContent=m+':'+s;
+  el.classList.toggle('urgent',eSec<=120);
+  document.getElementById('pfill').style.width=(eSec/eTot*100)+'%';
+}
+function cw(t){ return t.trim()?t.trim().split(/\s+/).filter(function(w){ return w.length>0; }).length:0; }
+function submitExam(){
+  clearInterval(eTimer);
+  var end=new Date(),essay=document.getElementById('ta').value.trim(),topic=document.getElementById('tdisp').textContent,dur=Math.floor((end-eStart)/1000);
+  var r=evaluate(essay,topic,dur,eStart,end); saveR(r); showR(r);
+}
+function analyzeStruct(essay){
+  var ft=essay;
+  if(!ft.trim()) return [{type:'bad',name:'التعبير فارغ',error:'لم تكتب أي شيء',fix:'ابدأ بمقدمة'}];
+  var ip=ft.search(/﴿|قال الله|قال رسول|صلى الله|بسم الله|لا شك أن|ما الذي|منذ فجر|عبر التاريخ/);
+  var bp=ft.search(/فضلاً عن|علاوةً|كما أن|ولا يخفى|ومن أبرز|كذلك|يُضاف|يتجلى|أولاً|ثانياً|ومن هنا/);
+  var cp=ft.search(/وخلاصة القول|وفي الختام|وفي المحصلة|ومما سبق|وأخيراً|سائلين الله|اللهم|نسأل الله|وختاماً/);
+  var len=ft.length,issues=[];
+  if(ip===-1) issues.push({type:'bad',name:'📘 المقدمة',error:'لا توجد افتتاحية واضحة.',fix:'ابدأ بآية كريمة أو حديث أو سؤال مؤثر.'});
+  else if(ip>len*.35) issues.push({type:'warn',name:'📘 المقدمة',error:'الافتتاحية في المنتصف.',fix:'انقلها للبداية.'});
+  else issues.push({type:'good',name:'📘 المقدمة',ok:'ممتاز! افتتاحية واضحة في مكانها.'});
+  if(bp===-1) issues.push({type:'bad',name:'📗 الجوهر',error:'لا توجد أدوات ربط.',fix:'استخدم "فضلاً عن" أو "كما أن".'});
+  else if(cp!==-1&&bp>cp) issues.push({type:'warn',name:'📗 الجوهر',error:'جاء بعد الخاتمة!',fix:'الجوهر قبل الخاتمة دائماً.'});
+  else issues.push({type:'good',name:'📗 الجوهر',ok:'جيد! أفكار منظمة بأدوات ربط.'});
+  if(cp===-1) issues.push({type:'bad',name:'📙 الخاتمة',error:'لا توجد خاتمة.',fix:'أضف "وخلاصة القول...".'});
+  else if(ip!==-1&&bp!==-1&&cp<bp) issues.push({type:'bad',name:'📙 الخاتمة',error:'الخاتمة قبل الجوهر!',fix:'الخاتمة دائماً في النهاية.'});
+  else issues.push({type:'good',name:'📙 الخاتمة',ok:'ممتاز! خاتمة واضحة في مكانها.'});
+  return issues;
+}
+function evaluate(essay,topic,dur,st,en){
+  var w=cw(essay),ft=essay,content=0;
+  if(w>=50)content+=5;if(w>=120)content+=5;if(w>=200)content+=5;if(ft.length>150)content+=5;
+  if(/﴿|قال الله|قال رسول|صلى الله/.test(ft))content+=5;
+  content=Math.min(content,25);
+  var issues=analyzeStruct(essay),good=issues.filter(function(i){ return i.type==='good'; }).length;
+  var structure=Math.round(good/3*25),lang=10;
+  ['فضلاً','علاوة','كما','وإن','إذ','ولا يخفى','ومما','وخلاصة','ومن هنا','وانطلاقاً','وفي ضوء','يتجلى'].forEach(function(c){ if(ft.includes(c))lang+=1.5; });
+  lang=Math.min(Math.round(lang),25);
+  var ev=0;
+  if(/﴿/.test(ft))ev+=6;if(/قال رسول الله|صلى الله عليه|حديث/.test(ft))ev+=5;if(/مثل|حكمة|يقول|قال/.test(ft))ev+=4;
+  ev=Math.min(ev,15);
+  var sp=w<30?3:w<80?5:8,total=Math.min(content+structure+lang+ev+sp,100);
+  var fb=[];
+  if(w<100)fb.push({t:'⚠️',m:'التعبير قصير — حاول الوصول لـ 200 كلمة'});
+  if(w>=200)fb.push({t:'✅',m:'عدد الكلمات ممتاز!'});
+  if(!/﴿/.test(ft))fb.push({t:'💡',m:'استشهد بآية قرآنية لرفع درجة الأدلة'});
+  if(good===3)fb.push({t:'🏆',m:'ترتيب الأقسام مثالي!'});
+  if(total>=85)fb.push({t:'🥇',m:'أداء متميز!'});
+  else if(total>=70)fb.push({t:'👍',m:'أداء جيد — ركّز على الترتيب والأدلة'});
+  else fb.push({t:'📚',m:'راجع ترتيب المقدمة والجوهر والخاتمة'});
+  var grade=total>=90?'🥇 ممتاز':total>=80?'🥈 جيد جداً':total>=70?'🥉 جيد':total>=60?'✔️ مقبول':'❌ يحتاج مراجعة';
+  var dm=Math.floor(dur/60),ds=dur%60;
+  return {topic:topic,essay:essay,sc:{content:content,structure:structure,lang:lang,ev:ev,sp:sp},total:total,grade:grade,fb:fb,issues:issues,words:w,st:st.toLocaleTimeString('ar'),en:en.toLocaleTimeString('ar'),date:new Date().toLocaleDateString('ar-OM'),dur:dm+'د '+ds+'ث'};
+}
+function showR(r){
+  document.getElementById('rtopic').textContent=r.topic;
+  document.getElementById('rscore').textContent=r.total;
+  document.getElementById('rgrade').textContent=r.grade;
+  document.getElementById('rtime').textContent='بدأت '+r.st+' — انتهيت '+r.en+' — '+r.dur+' — '+r.words+' كلمة';
+  var crit=[{nm:'المحتوى والأفكار',sc:r.sc.content,mx:25,cl:'#58a6ff'},{nm:'التنظيم والبنية',sc:r.sc.structure,mx:25,cl:'#c9a84c'},{nm:'اللغة والأسلوب',sc:r.sc.lang,mx:25,cl:'#bc8cff'},{nm:'الأدلة والشواهد',sc:r.sc.ev,mx:15,cl:'#3fb950'},{nm:'الإملاء والكتابة',sc:r.sc.sp,mx:10,cl:'#f78166'}];
+  document.getElementById('cgrid').innerHTML=crit.map(function(c){ return '<div class="citem"><div class="ci-name">'+c.nm+'</div><div class="ci-bar"><div class="ci-fill" style="width:'+(c.sc/c.mx*100)+'%;background:'+c.cl+'"></div></div><div class="ci-score" style="color:'+c.cl+'">'+c.sc+'/'+c.mx+'</div></div>'; }).join('');
+  document.getElementById('sanalysis').innerHTML=r.issues.map(function(i){ return '<div class="srow '+i.type+'"><div class="srow-info"><div class="srow-name">'+(i.type==='good'?'✅':'❌')+' '+i.name+'</div>'+(i.type==='good'?'<div class="srow-ok">'+i.ok+'</div>':'<div class="srow-error">الخطأ: '+i.error+'</div><div class="srow-fix">الصواب: '+i.fix+'</div>')+'</div></div>'; }).join('');
+  document.getElementById('fblist').innerHTML=r.fb.map(function(f){ return '<div class="fbitem"><span>'+f.t+'</span> <span>'+f.m+'</span></div>'; }).join('');
+  document.getElementById('ereview').textContent=r.essay||'—';
+  goTo('results');
+}
+function saveR(r){ var h=JSON.parse(localStorage.getItem('ta3beer_v4')||'[]'); h.unshift({topic:r.topic,total:r.total,grade:r.grade,date:r.date,words:r.words}); if(h.length>50)h.pop(); localStorage.setItem('ta3beer_v4',JSON.stringify(h)); }
+function renderH(){
+  var h=JSON.parse(localStorage.getItem('ta3beer_v4')||'[]'),el=document.getElementById('hlist');
+  if(!h.length){ el.innerHTML='<div class="empty-h"><div class="ei">📋</div><p>لا توجد اختبارات سابقة</p></div>'; return; }
+  el.innerHTML=h.map(function(it){ var c=it.total>=85?'#3fb950':it.total>=70?'#c9a84c':'#f85149'; return '<div class="hitem"><div class="hscore" style="background:'+c+'22;color:'+c+';border:2px solid '+c+'">'+it.total+'</div><div><div class="htopic">'+it.topic+'</div><div class="hmeta">'+it.grade+' | '+it.words+' كلمة | '+it.date+'</div></div></div>'; }).join('');
+}
+</script>
+</body>
+</html>
