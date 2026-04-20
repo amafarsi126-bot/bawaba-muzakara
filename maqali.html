@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأسئلة المقالية — بوابة المذاكرة</title>
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;
+  --card:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;
+  --green:#3fb950;--red:#f85149;--orange:#e8892a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;font-size:16px;padding-bottom:40px;}
+
+.topbar{background:var(--dark3);border-bottom:2px solid var(--gold);padding:12px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.back-btn{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:7px 14px;border-radius:10px;text-decoration:none;font-size:.86rem;font-weight:700;}
+.topbar-title{color:var(--gold);font-size:.95rem;font-weight:700;flex:1;}
+
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--dark2);padding:0 16px;}
+.tab{padding:12px 20px;font-size:.9rem;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+.body{max-width:800px;margin:0 auto;padding:20px 16px;}
+
+/* START */
+.start-card{background:var(--card);border:1.5px solid rgba(201,168,76,.3);border-radius:20px;padding:36px 24px;text-align:center;margin-bottom:20px;}
+.start-ico{font-size:3rem;margin-bottom:16px;}
+.start-title{font-size:1.4rem;font-weight:900;color:var(--gold);margin-bottom:8px;}
+.start-sub{font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.8;}
+.start-stats{display:flex;justify-content:center;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+.sstat{background:var(--dark3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;text-align:center;}
+.sstat-num{font-size:1.6rem;font-weight:900;color:var(--gold);}
+.sstat-lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.start-btn{background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;border-radius:40px;padding:14px 46px;font-family:inherit;font-size:1.05rem;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,.35);transition:all .3s;}
+.start-btn:hover{transform:scale(1.03);}
+
+/* QUESTION */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px 20px;margin-bottom:16px;animation:fadeIn .3s ease;}
+.q-num{font-size:.78rem;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.q-badge{background:rgba(201,168,76,.12);color:var(--gold);padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;}
+.q-text{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.8;}
+.q-ta{width:100%;min-height:90px;background:var(--dark3);border:1.5px solid var(--border);border-radius:10px;color:var(--text);padding:12px 14px;font-family:inherit;font-size:.92rem;resize:vertical;direction:rtl;line-height:1.8;transition:border-color .2s;}
+.q-ta:focus{outline:none;border-color:var(--gold);}
+.q-ta::placeholder{color:var(--muted);}
+.q-ta:disabled{opacity:.7;cursor:default;}
+
+/* ANSWER REVEAL */
+.ans-area{margin-top:12px;}
+.check-btn{background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;border-radius:10px;padding:10px 24px;font-family:inherit;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:10px;}
+.check-btn:hover{transform:scale(1.02);}
+
+.model-ans{display:none;margin-top:12px;background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.25);border-right:3px solid var(--green);border-radius:10px;padding:14px 16px;font-size:.9rem;color:#b8f0c8;line-height:1.9;}
+.model-ans.show{display:block;animation:fadeIn .3s ease;}
+.model-ans-title{font-weight:700;color:var(--green);margin-bottom:8px;font-size:.85rem;}
+
+.result-row{display:none;margin-top:10px;gap:10px;flex-wrap:wrap;}
+.result-row.show{display:flex;}
+.res-badge{padding:7px 14px;border-radius:20px;font-size:.82rem;font-weight:700;}
+.res-correct{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);}
+.res-wrong{background:rgba(248,81,73,.12);color:var(--red);border:1px solid rgba(248,81,73,.3);}
+
+.retry-btn{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:7px 16px;border-radius:20px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.retry-btn:hover{background:rgba(201,168,76,.2);}
+.retry-count{font-size:.72rem;color:var(--muted);}
+
+/* PROGRESS */
+.prog-bar-wrap{background:var(--dark3);border-radius:10px;height:8px;margin-bottom:20px;overflow:hidden;}
+.prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:10px;transition:width .5s ease;width:0%;}
+.prog-info{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:6px;}
+
+/* SCORE */
+.score-card{background:var(--card);border:1.5px solid var(--gold);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px;}
+.score-num{font-size:3.5rem;font-weight:900;color:var(--gold);}
+.score-label{color:var(--muted);font-size:.9rem;margin-top:4px;}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.sg-item{background:var(--dark3);border-radius:10px;padding:12px 8px;text-align:center;}
+.sg-num{font-size:1.4rem;font-weight:900;}
+.sg-lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:500px){.start-stats{gap:10px}.score-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="back-btn">← الرئيسية</a>
+  <span class="topbar-title">📝 الأسئلة المقالية والتعاريف</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('maqali')">📝 أسئلة مقالية</button>
+  <button class="tab" onclick="switchTab('taaref')">📖 التعاريف</button>
+</div>
+
+<div class="body">
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <div class="start-card">
+      <div class="start-ico">📝</div>
+      <div class="start-title">الأسئلة المقالية والتعاريف</div>
+      <div class="start-sub">تدرب على الإجابة المقالية مع تصحيح فوري وإمكانية الإعادة</div>
+      <div class="start-stats">
+        <div class="sstat"><div class="sstat-num" id="ss-maqali">55</div><div class="sstat-lbl">سؤال مقالي</div></div>
+        <div class="sstat"><div class="sstat-num" id="ss-taaref">54</div><div class="sstat-lbl">تعريف</div></div>
+      </div>
+      <button class="start-btn" onclick="startExam()">ابدأ التدريب ✦</button>
+    </div>
+  </div>
+
+  <!-- EXAM SCREEN -->
+  <div id="exam-screen" style="display:none">
+    <div class="prog-info">
+      <span id="prog-text">0 / 0</span>
+      <span id="prog-answered">أجبت: 0</span>
+    </div>
+    <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-fill"></div></div>
+    <div id="questions-wrap"></div>
+  </div>
+
+</div>
+
+<script>
+var currentTab = 'maqali';
+var retryCount = {};
+var answered = {};
+
+var MAQALI = [
+  {q:"اذكر واجبات الشرطة:", a:"• المحافظة على الأمن والنظام\n• بث روح الطمأنينة للمواطنين والمقيمين\n• العمل على منع ارتكاب الجرائم\n• تقديم الخارجين عن العدالة\n• إجراء التحري والاستدلالات\n• تقديم الخدمات للمواطنين (إصدار الجوازات والبطاقات وفحص المركبات...)"},
+  {q:"اذكر عقوبات الجرائم الانضباطية البسيطة:", a:"• التأنيب (للضباط)\n• الإنذار\n• الحرمان من الراحة الأسبوعية أو بعضها\n• الخصم من الراتب من يومين إلى 9 أيام\n• السجن من يوم إلى 5 أيام\n• السجن في الثكنة من يوم إلى 6 أيام بنصف الراتب"},
+  {q:"اذكر عقوبات الجرائم الانضباطية الجسيمة:", a:"• الخصم من الراتب من 10 إلى 30 يوماً\n• الحرمان من الإجازة الاعتيادية من ربعها إلى نصفها\n• تأجيل العلاوة الدورية من 3 أشهر إلى سنة (للضباط)\n• السجن من 5 أيام إلى 30 يوماً\n• الحجز بالثكنة من 7 إلى 15 يوماً"},
+  {q:"اذكر عقوبات الجرائم الانضباطية الجسيمة جداً:", a:"• الخصم من الراتب من 30 يوماً إلى 3 أشهر\n• السجن من 30 يوماً إلى 3 أشهر\n• التنزيل لرتبة واحدة مع راتبها\n• الفصل من الخدمة مع حفظ حق معاش التقاعد"},
+  {q:"ما هي شروط تعيين رجل الشرطة؟", a:"• أن يكون عماني الجنسية\n• أن يستوفي شروط السن واللياقة الصحية والبدنية\n• ألا يكون قد تزوج بغير عمانية بعد فبراير 1986 دون تصريح\n• أن يكون حسن السيرة والسلوك\n• أن يكون حاصلاً على المؤهلات والخبرات\n• ألا يكون قد صدر ضده حكم جزائي في جريمة مخلة بالشرف"},
+  {q:"اذكر خمسة أسباب تنتهي بها خدمة رجل الشرطة:", a:"• الوفاة أو احتمال الغيبة الدائمة\n• فقدان الجنسية\n• عدم اللياقة الصحية بقرار من اللجنة الطبية\n• تجاوز سن التقاعد القانوني\n• الزواج بغير عمانية دون تصريح\n• الفصل من الخدمة أو قرار تأديبي\n• العزل بمرسوم سلطاني"},
+  {q:"اذكر صلاحيات سلطة التصديق على قرارات العقوبات الانضباطية:", a:"• تخفيض العقوبة أو استبدالها بعقوبة أقل\n• إيقاف تنفيذ العقوبات كلها\n• إلغاء كل العقوبات أو بعضها\n• الإحالة إلى محكمة الشرطة المختصة"},
+  {q:"اذكر أنواع الحوادث المرورية:", a:"• التدهور\n• الدهس\n• الاصطدام (بجسم ثابت أو مركبة)"},
+  {q:"اذكر دوافع ارتكاب الجريمة:", a:"• عوامل فسيولوجية\n• عوامل ثقافية\n• عوامل اجتماعية\n• عوامل نفسية"},
+  {q:"اذكر مراحل ارتكاب الجرائم:", a:"• مرحلة التفكير والتصميم\n• مرحلة التخطيط\n• مرحلة التحضير للجريمة\n• مرحلة الشروع\n• مرحلة التنفيذ"},
+  {q:"اذكر أنواع رخص القيادة ومدة صلاحياتها:", a:"• خفيفة (10 سنوات)\n• ثقيلة (6 سنوات)\n• معدات (6 سنوات)\n• دراجة آلية (10 سنوات)"},
+  {q:"عدد أنواع الحراسات التي يقوم بها رجل الشرطة:", a:"• حراسة الأشخاص\n• حراسة مؤسسات عسكرية\n• حراسة مؤسسات مدنية\n• حراسة المركبات\n• حراسة الأماكن\n• حراسة ممتلكات أو أموال أخرى"},
+  {q:"ما هي مهام معهد السلامة المرورية؟", a:"• تدريب مدربي السياقة\n• تدريب أفراد الفحص والترخيص\n• عمل ورش تدريبية لرجال الشرطة\n• عمل محاضرات توعية للمواطنين"},
+  {q:"اذكر أنواع المخدرات:", a:"• مخدرات طبيعية\n• تصنيعية\n• تخليقية"},
+  {q:"اذكر أنواع الجريمة حسب الوصف القانوني:", a:"• جناية\n• جنحة\n• مخالفة (قباحة)"},
+  {q:"اذكر أنواع العقوبات الفرعية أو الإضافية:", a:"• منع الإقامة\n• طرد الأجنبي من البلاد\n• الحرمان من الحقوق المدنية\n• مصادرة الأموال\n• منع مزاولة الأعمال"},
+  {q:"اذكر خمسة أنواع من الجرائم المخلة بسير العدالة:", a:"• الافتراء أو الكذب\n• كتم الجرائم\n• الهوية الكاذبة\n• شهادة الزور\n• التقارير الفنية الكاذبة\n• التخلف عن الحضور\n• اليمين الكاذبة\n• استيفاء الحق بالذات"},
+  {q:"اذكر موانع الترقية:", a:"• إحالة المنتسب للتحقيق\n• وقف منتسب الشرطة\n• الإحالة للمحاكمة"},
+  {q:"اذكر العقوبات التي توقعها المحاكم العسكرية:", a:"• الإعدام\n• السجن المطلق\n• السجن\n• الغرامة"},
+  {q:"اذكر أربعة من الأسباب التي تسقط الأحكام الجزائية أو تمنع أو تعلق تنفيذها:", a:"• العفو العام\n• العفو الخاص\n• انتهاء مدة العقوبة\n• موت المتهم\n• تنازل المجني عليه في الدعوى التي تسقط بالتنازل"},
+  {q:"اذكر الحالات التي يصدر فيها الادعاء العام بالحبس الاحتياطي:", a:"• إذا استدعت ضرورة التحقيق إبقاء المتهم في السجن\n• إذا كانت القضية معاقباً عليها بالإعدام\n• الخوف من فرار المتهم\n• ليست له مكان إقامة معروف"},
+  {q:"عدد أنواع أركان الجريمة:", a:"• ركن مادي\n• ركن معنوي\n• ركن قانوني"},
+  {q:"ما هي مراحل الدعوى العمومية؟", a:"• مرحلة التحري\n• مرحلة الاتهام\n• مرحلة المحاكمة"},
+  {q:"ما هي الأسباب التي تنقضي بسببها تحريك الدعوى العمومية؟", a:"• وفاة المتهم\n• العفو عن الجريمة\n• مضي مدة العقوبة\n• التنازل عن الشكوى\n• الحكم النهائي\n• إلغاء النص العقابي"},
+  {q:"ما هي اختصاصات الادعاء العام؟", a:"• رفع الدعوى العمومية ومباشرتها أمام المحكمة المختصة\n• الإشراف على مأموري الضبط القضائي\n• التحقيق في مختلف القضايا الجنائية\n• ملاحقة المجرمين وتنفيذ الأحكام\n• تطبيق القوانين الجزائية"},
+  {q:"من هم مأمورو الضبط الإداري؟", a:"• رجال شرطة عمان السلطانية\n• رجال قوات السلطان المسلحة\n• موظفو الجهات الأمنية الأخرى\n• موظفو الجهات الحكومية التي تعمل في المحافظة على النظام العام"},
+  {q:"ما هي أهداف الضبط القضائي؟", a:"• البحث عن مرتكبي الجرائم والقبض عليهم\n• تقديم المتهمين للمحاكمة\n• تنفيذ العقوبات التي يحكم بها على المجرمين"},
+  {q:"من هم مأمورو الضبط القضائي؟", a:"• أعضاء الادعاء العام\n• ضباط الشرطة والرتب النظامية\n• موظفو جهات الأمن العام\n• الولاة ونوابهم\n• كل من تخوله القوانين هذه الصفة"},
+  {q:"ما هي اختصاصات مأمور الضبط القضائي؟", a:"• قبول البلاغات والشكاوى\n• الحصول على الإيضاحات عن الجريمة ومرتكبيها\n• تنظيم محضر والتصرف فيه"},
+  {q:"ما هي اختصاصات القائد الأعلى للشرطة؟", a:"• إصدار قانون الشرطة\n• تعيين المفتش العام\n• إصدار الأوامر والتوجيهات"},
+  {q:"ما هي اختصاصات المفتش العام للشرطة والجمارك؟", a:"• إصدار اللوائح والقرارات المنظمة للشرطة\n• تعيين الضباط بعد موافقة جلالة السلطان\n• تعيين الرتب الأخرى\n• تنفيذ المهام والاختصاصات الموكولة بمقتضى قانون الشرطة"},
+  {q:"اذكر الأدلة المادية للحوادث المرورية:", a:"• المركبات من حيث ما لحق بها من أضرار\n• آثار الفرامل\n• أي أضرار بالشوارع أو الشواخص أو الأماكن المجاورة"},
+  {q:"اذكر الأدلة المعنوية للحوادث المرورية:", a:"• محضر سؤال قائدي المركبات\n• محضر سؤال الركاب\n• محضر شهادة الشهود"},
+  {q:"ما هي الحوادث التي لا تصنف من ضمن الحوادث المرورية البسيطة؟", a:"• إذا كان أحد أطراف الحادث بحالة سكر أو تحت تأثير المخدر\n• إذا كان أحد الأطراف لا يحمل رخصة قيادة\n• إذا نتج عن الحادث وفيات أو إصابات بشرية\n• إذا كانت مركبة الطرف المخطئ غير مؤمنة\n• إذا نتج عن الحادث أضرار مادية بالممتلكات العامة والخاصة"},
+  {q:"ما هي صور التعبير عن الولاء الوظيفي؟", a:"• طاعة أوامر الرؤساء\n• الإخلاص في العمل\n• الغيرة على الجهاز والدفاع عنه\n• الوفاء\n• التفاني\n• التضحية\n• السرية في العمل"},
+  {q:"اذكر أوجه تصرف السلطات الرئاسية في الجرائم:", a:"• حفظ التحقيق بقرار مسبب\n• توقيع العقوبات الانضباطية وفق القانون\n• رفع الأمر إلى السلطة الأعلى\n• التوصية بالإحالة إلى المحكمة العسكرية المختصة"},
+  {q:"عدد أنواع الجوازات:", a:"• الخاص\n• الدبلوماسي\n• للمهمة\n• العادي"},
+  {q:"ما هي أسباب التبرير في الجريمة؟", a:"• الدفاع المشروع\n• إطاعة القانون\n• حالة الضرورة"},
+  {q:"ما هي الإجراءات الاحتياطية التي تتخذ في مواجهة منتسب الشرطة عند ارتكابه أي جريمة؟", a:"• التحفظ العسكري\n• الإيقاف عن العمل\n• الحبس الاحتياطي"},
+  {q:"عدد أنواع العقوبات الأصلية:", a:"• الإرهابية\n• التأديبية\n• التكديرية"},
+  {q:"اذكر أنواع عمليات الشرطة:", a:"• عمليات الشرطة العادية (تأمين الاحتفالات والدوريات الأمنية)\n• عمليات الحراسة والتأمين (حراسة الشخصيات المهمة والمنشآت)\n• العمليات الخاصة (قوات خاصة لمواجهة الشغب ومكافحة الإرهاب)"},
+  {q:"اذكر أنواع الخطط العملياتية:", a:"خطط العمليات الأمنية المشتركة: بارود، جبرين، شباب قوي، درع، إدارة الحوادث الكبرى\n\nخطط الطوارئ الوطنية: إدارة حالات الكوارث، طوارئ مطاري مسقط وصلالة، البحث والإنقاذ\n\nخطط العمليات المركزية: بر(6)، حالات التأهب، درع(18)، الخيران، حزم\n\nالخطط الداخلية للقيادات: تقفي الأثر، خطة ليخ، خطة عرين"},
+  {q:"اذكر الحالات التي يجوز فيها استعمال السلاح:", a:"• القبض على شخص يقاوم أو يفر\n• حراسة السجناء\n• تفريق تجمهر يهدد الأمن"}
+,
+
+  {q:"ما المقصود بخطة (وطن)؟", a:"تعنى بتأمين مواقع الاحتفالات والمناسبات التي يرعاها المقام السامي، وتهدف إلى ضمان سير الاحتفالات والمناسبات بسلام وأمان مع الحفاظ على هيبة ومكانة السلطان."},
+  {q:"ما المقصود بخطة (جبرين)؟", a:"تعنى بالاستجابة الوطنية للحوادث والتهديدات الإرهابية عالية المخاطر."},
+  {q:"ما المقصود بخطة (سد منيع)؟", a:"تعنى بالتعامل مع الأحداث التي تخل بالنظام أو الأمن العام مثل التجمهر والإضراب بكافة أنواعه والاعتصامات والمظاهرات وإقامة المسيرات غير السلمية."},
+  {q:"ما المقصود بخطة (بحر)؟", a:"تعنى بالتعامل مع العمالة الوافدة المخالفة لقانون العمل في نشاط صيد الأسماك على طول الشريط الساحلي لمحافظات سلطنة عمان."},
+  {q:"ما المقصود بخطة (صقر)؟", a:"تعنى بتأمين مواكب تحركات المقام السامي والشخصيات الهامة من ملوك ورؤساء الدول وأولياء العهود عند وصولهم أو مغادرتهم أراضي سلطنة عمان سواء عبر المنافذ الجوية أو البحرية أو البرية، وتأمين مواكبهم ومساراتها."},
+  {q:"ما المقصود بخطة (جسور)؟", a:"تعنى بتنسيق الجهود بين الجهات المعنية لإجلاء المواطنين العمانيين والرعايا غير العمانيين، واستقبال وإيواء النازحين واللاجئين."},
+  {q:"ما المقصود بخطة (مكة)؟", a:"تعنى بتأمين دور العبادة في المناسبات الدينية."},
+  {q:"ما المقصود بخطة (درع)؟", a:"تعنى بحماية وتأمين منشآت الدولة الحساسة والحيوية المحددة في هذه الخطة، وأي منشآت أخرى وفق أمر العمليات الأمنية المشتركة."},
+  {q:"ما المقصود بخطة (برق)؟", a:"تعنى بضمان توفير الأمن والحماية لأصحاب الجلالة والسمو والوفود المشاركة خلال فترة انعقاد مؤتمر القمة لدول مجلس التعاون الخليجي على أرض سلطنة عمان."},
+  {q:"ما المقصود بخطة (حصن)؟", a:"تعنى بتنفيذ تدابير وأوامر حالة الطوارئ من قبل شرطة عمان السلطانية أو قوات السلطان المسلحة عند التكليف."},
+  {q:"ما المقصود بخطة (حزام)؟", a:"تعنى بتأمين سواحل سلطنة عمان من عمليات الهجرة غير الشرعية (التسلل والتهريب عبر البحر)."},
+  {q:"ما المقصود بخطة (شبك قوي)؟", a:"تعنى بتحقيق إقفال محكم للمحافظات والولايات بسلطنة عمان بشكل كلي أو جزئي، وذلك بإقامة نقاط أمنية مشتركة مع تسيير الدوريات الأمنية بين النقاط وتفعيلها عند وجود تهديدات أو وقوع أحداث أمنية."}
+];
+
+var TAAREF = [
+  {q:"قانون الجزاء العماني", a:"مجموعة من القواعد القانونية تحدد الأفعال التي تعد جرائم وتبين العقوبات المقررة لها"},
+  {q:"الجرائم الانضباطية", a:"كل ما يسند لرجل الشرطة بالمخالفة لقوانين وأنظمة الخدمة وأوامر الرؤساء"},
+  {q:"العقوبة الانضباطية", a:"العقوبة المنصوص عليها في قانون الشرطة وتوقع على منتسب الشرطة المرتكب لجريمة انضباطية"},
+  {q:"الجريمة", a:"كل فعل أو امتناع عن فعل يعاقب عليه القانون"},
+  {q:"الحس الأمني", a:"الشعور بالمسؤولية الأمنية تجاه الذات وتجاه الآخرين وكذلك الشعور بالمسؤولية بهدف رفع مستوى الأمن العام أو الخاص"},
+  {q:"القيادة الذاتية", a:"وضع خطط وتصورات عملية ذاتية وعكسها على الواقع"},
+  {q:"الانتماء", a:"الشعور النفسي والانتماء للوطن"},
+  {q:"البلاغ", a:"إخطار يقدمه شخص إلى الجهات المختصة للإبلاغ عن جريمة أو حادث أو واقعة عرضية"},
+  {q:"الشكوى", a:"تقدم من المجني عليه أو وكيله الشرعي ضد الجاني"},
+  {q:"الاعتصام", a:"إصرار فرد أو مجموعة من الأفراد تربطهم رابطة معينة على الامتناع عن القيام بعمل أو الامتناع عن مغادرة مكان معين إلا بعد تحقيق مطالبهم"},
+  {q:"الدورية", a:"خروج فردين أو أكثر مجهزين على وسيلة نقل للتجول في منطقة معينة ومحددة جغرافياً"},
+  {q:"الحبس الاحتياطي", a:"إجراء احتياطي وقتي يوضع بموجبه المتهم في مكان معين بأمر من جهة قضائية مختصة وللمدة المقررة قانوناً من أجل التأكد من ثبوت التهمة"},
+  {q:"الراتب", a:"الراتب الأساسي المقرر للرتبة أو الدرجة ويدخل فيه العلاوات الدورية والاستثنائية"},
+  {q:"الانضباط", a:"التحكم الذاتي الذي يمارسه الإنسان على نفسه من أجل تكييف سلوكه وفق قواعد مقررة اقتضتها طبيعة العمل"},
+  {q:"مسرح الجريمة", a:"المكان أو مجموعة من الأماكن التي مارس فيها الجاني نشاطه الإجرامي وما قد يحتوي على أدلة وآثار"},
+  {q:"الاستيقاف", a:"مجرد إيقاف لشخص حامت حوله الشبهات في مكان وجوده أو سيره أو دلت عليه شواهد واضحة وذلك من أجل استجلاء أمره"},
+  {q:"التحية العسكرية", a:"إحدى التقاليد العسكرية البارزة في تنظيم أسلوب التعارف والتقارب بين الأسرة العسكرية، تؤدى باليد أو البندقية أو السيف، يؤديها رجل الشرطة تعبيراً عن احترام من هو أعلى رتبة منه"},
+  {q:"الولاء الوظيفي", a:"الوفاء والانتماء والإخلاص والتفاني وحب العمل في الجهاز الذي ينتمي إليه رجل الشرطة"},
+  {q:"راية الشرطة", a:"قطعة قماش مستطيلة الشكل تتكون من لون واحد وهو الأزرق يتوسطها شعار الشرطة، وتم تسليم الراية في 4 نوفمبر 1974"},
+  {q:"الإيقاف عن العمل", a:"إسقاط الولاية الوظيفية لرجل الشرطة مؤقتاً"},
+  {q:"التحفظ العسكري", a:"تحديد إقامة منتسب الشرطة بحراسة أو بدونها في مكان يحدده القائد المعني"},
+  {q:"التفتيش", a:"البحث بجسم المتهم أو مركبته للحصول على أدلة مادية تفيد أو تساعد في كشف الحقيقة"},
+  {q:"التفتيش الإداري", a:"إجراء من الإجراءات التحفظية التي تهدف إلى تحقيق بعض الأغراض الإدارية العامة والخاصة التي يحددها القانون أو اللائحة ولا يلزم الحصول على أمر بالتفتيش لإجرائه"},
+  {q:"التفتيش القضائي", a:"إجراء من إجراءات التفتيش وقد تسفر عنه نتائج أو أدلة تدين المتهم"},
+  {q:"الإبعاد (للأجنبي)", a:"يكون الذي صدر بحقه حكم قضائي بالإبعاد"},
+  {q:"المغادرة", a:"مغادرة الأجنبي الذي انتهت فترة إقامته في السلطنة ما لم تجدد"},
+  {q:"اللائحة", a:"يقصد بها اللائحة التنفيذية أو أي قرار يصدره المفتش العام تنفيذاً للقانون"},
+  {q:"المخصصات", a:"البدلات التي تمنح لرجل الشرطة بسبب طبيعة العمل أو لمواجهة أعباء معينة كبدل السكن أو الكهرباء والمياه والانتقال والسفر"},
+  {q:"السرقة", a:"أخذ مال الغير المنقول بصورة غير شرعية"},
+  {q:"الاختلاس", a:"سرقة الموظف المال الموكول إليه، أي الاستيلاء على المال العام من قبل الموظف"},
+  {q:"الرشوة", a:"اتجار الموظف بأعمال وظيفته وذلك بطلبه أو قبوله مقابلاً ليقوم بعمل من أعمال وظيفته أو ليمتنع عنه أو يؤخر إجراءاته"},
+  {q:"الحراسة", a:"إجراء يتخذه المركز أو رجل الشرطة لحماية الأرواح أو الممتلكات أو تأمين المنشآت من أي عدوان يحتمل وقوعه"},
+  {q:"التحقيق الجنائي", a:"علم يرشد المحقق إلى كيفية السير في تتبع الجريمة من بدايتها إلى نهايتها لكشف غموضها والقبض على فاعلها"},
+  {q:"الدفاع الشرعي", a:"استعمال القوة اللازمة والضرورية لدفع خطر حال وغير مشروع يهدد بجريمة ضد النفس والمال"},
+  {q:"الطب الشرعي", a:"وضع جميع الخبرات الطبية في خدمة العدالة والقانون"},
+  {q:"التنكر", a:"العمل على إخفاء شخصية الإنسان الحقيقية بوسائل طبيعية كالاندماج في طبقة الحرفيين أو التظاهر بالجنون"},
+  {q:"النزيل", a:"كل من يسجن تنفيذاً لحكم قضائي صادر من المحكمة"},
+  {q:"المحبوس", a:"كل من يحبس احتياطياً تنفيذاً لأمر صادر من سلطة مختصة"},
+  {q:"الدعوى العمومية", a:"مجموعة من الإجراءات التي يقوم بها الادعاء العام للتحقق من وقوع جريمة ونسبتها إلى فاعلها وتقديمه للقضاء للحصول على تقرير حق الدولة في العقاب"},
+  {q:"الادعاء العام", a:"هيئة مستقلة تقوم بتمثيل المجتمع في الدعاوى العمومية والقيام بالأعمال المتعلقة بها"},
+  {q:"الضبط القضائي", a:"مجموعة من الإجراءات التي تتخذها سلطات الضبط القضائي عند وقوع الجريمة بهدف البحث عن مرتكبيها والقبض عليهم وتقديمهم للمحاكمة ثم تنفيذ العقوبة"},
+  {q:"مأمور الضبط القضائي", a:"كل من عهد إليه القانون تحري الحقيقة في الحوادث والبلاغات الجنائية والتحقيق فيها"},
+  {q:"الأدلة المادية", a:"كل ما يخلفه الجاني في مسرح الجريمة بعد ارتكابها"},
+  {q:"الأدلة المعنوية", a:"تلك الأدلة التي ليس لها وجود مادي ولا يمكن إدراكها بالحواس وإنما تعبر بواسطة الفهم والاستنتاج"},
+  {q:"المعاينة", a:"مشاهدة المكان الذي ارتكبت فيه الجريمة لإثبات حالة الأماكن والأشياء والأشخاص في مسرح الجريمة ووصف شامل له بالكتابة والرسم والتصوير"},
+  {q:"الإيذاء البسيط", a:"الإقدام على ضرب شخص أو جرحه أو إيذائه دون أن ينجم عن هذه الأفعال مرض أو تعطيل عن العمل"},
+  {q:"الإخراج", a:"إعادة الأجنبي الذي دخل أراضي السلطنة بصورة غير مشروعة إلى خارج الحدود"},
+  {q:"الحدث الجانح", a:"كل ذكر أو أنثى لم يكمل سن الثامنة عشرة وبلغ التاسعة وارتكب جريمة يعاقب عليها القانون"},
+  {q:"الحادث المروري", a:"كل واقعة ينجم عنها وفاة أو إصابة أو خسارة في الممتلكات بدون قصد سابق وذلك بسبب قائد المركبة أو الطريق أو المركبات"},
+  {q:"الاستجواب", a:"مواجهة المدعى عليه بأدلة معينة متوفرة لدى سلطة التحقيق"},
+  {q:"عمليات الشرطة", a:"كل المهام والواجبات والإجراءات التي تقوم بها شرطة عمان السلطانية من أجل حفظ الأمن والنظام العام ومنع وقوع الجريمة وضبط ما يقع منها"},
+  {q:"أمر العمليات", a:"توجيه أوامر العمليات الذي يتم من خلاله تنفيذ الخطة الأمنية أو المهمة الواجب تنفيذها في أي مناسبة"}
+];
+
+var currentData = [];
+var scores = {correct:0, wrong:0, total:0};
+
+function switchTab(tab){
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(function(t,i){
+    t.classList.toggle('active', (i===0&&tab==='maqali')||(i===1&&tab==='taaref'));
+  });
+  if(document.getElementById('exam-screen').style.display !== 'none'){
+    buildQuestions();
+  }
+}
+
+function startExam(){
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'block';
+  retryCount = {};
+  answered = {};
+  scores = {correct:0, wrong:0, total:0};
+  buildQuestions();
+  window.scrollTo(0,0);
+}
+
+function buildQuestions(){
+  currentData = currentTab === 'maqali' ? MAQALI : TAAREF;
+  var total = currentData.length;
+  document.getElementById('prog-text').textContent = '0 / ' + total;
+  document.getElementById('prog-answered').textContent = 'أجبت: 0';
+
+  var html = '';
+  currentData.forEach(function(q, i){
+    html += '<div class="q-card" id="qc-'+i+'">' +
+      '<div class="q-num"><span>سؤال ' + (i+1) + ' من ' + total + '</span>' +
+      '<span class="q-badge" id="qb-'+i+'">' + (currentTab==='maqali'?'مقالي':'تعريف') + '</span></div>' +
+      '<div class="q-text">' + q.q + '</div>' +
+      '<div class="ans-area">' +
+        '<textarea class="q-ta" id="ta-'+i+'" placeholder="اكتب إجابتك هنا..." oninput="updateProg()"></textarea>' +
+        '<button class="check-btn" onclick="checkAnswer('+i+')">تصحيح ✓</button>' +
+      '</div>' +
+      '<div class="model-ans" id="ma-'+i+'">' +
+        '<div class="model-ans-title">📋 الإجابة النموذجية:</div>' +
+        q.a.replace(/\n/g,'<br>') +
+      '</div>' +
+      '<div class="result-row" id="rr-'+i+'">' +
+        '<span class="res-badge res-correct" id="rc-'+i+'" style="display:none">✅ أحسنت!</span>' +
+        '<span class="res-badge res-wrong" id="rw-'+i+'" style="display:none">❌ راجع الإجابة</span>' +
+        '<button class="retry-btn" id="rb-'+i+'" style="display:none" onclick="retryQ('+i+')">🔄 إعادة المحاولة <span class="retry-count" id="rbc-'+i+'"></span></button>' +
+      '</div>' +
+    '</div>';
+  });
+  document.getElementById('questions-wrap').innerHTML = html;
+}
+
+function checkAnswer(i){
+  var ta = document.getElementById('ta-'+i);
+  var ans = ta.value.trim();
+  if(!ans) return;
+
+  var ma = document.getElementById('ma-'+i);
+  var rr = document.getElementById('rr-'+i);
+  var rc = document.getElementById('rc-'+i);
+  var rw = document.getElementById('rw-'+i);
+  var rb = document.getElementById('rb-'+i);
+  var qb = document.getElementById('qb-'+i);
+
+  ma.classList.add('show');
+  rr.classList.add('show');
+
+  var count = retryCount[i] || 0;
+  var isFirst = !answered[i];
+
+  // Check if answer seems correct (basic check - not empty and has some content)
+  // User self-evaluates by comparing with model answer
+  if(isFirst){
+    answered[i] = true;
+    scores.total++;
+    // Show correct/wrong options for self-evaluation
+    rc.style.display = 'inline-block';
+    rw.style.display = 'inline-block';
+    rb.style.display = 'none';
+    
+    // Add self-eval buttons
+    rc.onclick = function(){ markSelf(i, true); };
+    rw.onclick = function(){ markSelf(i, false); };
+    
+    qb.textContent = '👁 قارن إجابتك';
+    qb.style.background = 'rgba(88,166,255,.15)';
+    qb.style.color = 'var(--blue)';
+  }
+  updateProg();
+}
+
+function markSelf(i, correct){
+  var rc = document.getElementById('rc-'+i);
+  var rw = document.getElementById('rw-'+i);
+  var rb = document.getElementById('rb-'+i);
+  var ta = document.getElementById('ta-'+i);
+  var qb = document.getElementById('qb-'+i);
+
+  rc.onclick = null;
+  rw.onclick = null;
+
+  if(correct){
+    scores.correct++;
+    rc.style.display = 'inline-block';
+    rw.style.display = 'none';
+    qb.textContent = '✅ صحيح';
+    qb.style.background = 'rgba(63,185,80,.15)';
+    qb.style.color = 'var(--green)';
+    // Allow optional retry (practice again) - max 2
+    var count = retryCount[i] || 0;
+    if(count < 2){
+      rb.style.display = 'inline-block';
+      document.getElementById('rbc-'+i).textContent = '(' + (2-count) + ' مرة متبقية)';
+    }
+  } else {
+    scores.wrong++;
+    rw.style.display = 'inline-block';
+    rc.style.display = 'none';
+    qb.textContent = '❌ خطأ';
+    qb.style.background = 'rgba(248,81,73,.15)';
+    qb.style.color = 'var(--red)';
+    // Allow retry - max 2
+    var count = retryCount[i] || 0;
+    if(count < 2){
+      rb.style.display = 'inline-block';
+      document.getElementById('rbc-'+i).textContent = '(' + (2-count) + ' مرة متبقية)';
+    }
+  }
+  updateProg();
+}
+
+function retryQ(i){
+  var count = (retryCount[i] || 0) + 1;
+  retryCount[i] = count;
+
+  var ta = document.getElementById('ta-'+i);
+  var ma = document.getElementById('ma-'+i);
+  var rr = document.getElementById('rr-'+i);
+  var rb = document.getElementById('rb-'+i);
+  var qb = document.getElementById('qb-'+i);
+
+  // Reset
+  ta.value = '';
+  ta.disabled = false;
+  ma.classList.remove('show');
+  rr.classList.remove('show');
+  document.getElementById('rc-'+i).style.display = 'none';
+  document.getElementById('rw-'+i).style.display = 'none';
+  rb.style.display = 'none';
+  answered[i] = false;
+
+  qb.textContent = currentTab==='maqali'?'مقالي':'تعريف';
+  qb.style.background = '';
+  qb.style.color = '';
+
+  if(count >= 2){
+    rb.style.display = 'none';
+  }
+
+  ta.focus();
+  document.getElementById('qc-'+i).scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function updateProg(){
+  var total = currentData.length;
+  var done = Object.keys(answered).filter(function(k){ return answered[k]; }).length;
+  var pct = total > 0 ? (done/total*100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = done + ' / ' + total;
+  document.getElementById('prog-answered').textContent = 'أجبت: ' + done;
+}
+</script>
+</body>
+</html>

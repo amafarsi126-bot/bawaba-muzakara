@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معلومات عن سلطنة عُمان — بوابة المذاكرة</title>
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;
+  --card:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;
+  --green:#3fb950;--red:#f85149;--blue:#58a6ff;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;font-size:16px;padding-bottom:80px;}
+.topbar{background:var(--dark3);border-bottom:2px solid var(--gold);padding:12px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.back-btn{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:7px 14px;border-radius:10px;text-decoration:none;font-size:.86rem;font-weight:700;}
+.topbar-title{color:var(--gold);font-size:.95rem;font-weight:700;flex:1;}
+.prog-wrap{height:4px;background:rgba(255,255,255,.08);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .4s;width:0%;}
+.start-wrap{max-width:600px;margin:40px auto;padding:0 16px;}
+.start-card{background:var(--card);border:1.5px solid rgba(201,168,76,.3);border-radius:20px;padding:36px 24px;text-align:center;}
+.start-ico{font-size:3rem;margin-bottom:16px;}
+.start-title{font-size:1.4rem;font-weight:900;color:var(--gold);margin-bottom:8px;}
+.start-sub{font-size:.88rem;color:var(--muted);margin-bottom:28px;line-height:1.8;}
+.start-stats{display:flex;justify-content:center;gap:16px;margin-bottom:28px;flex-wrap:wrap;}
+.sstat{background:var(--dark3);border:1px solid var(--border);border-radius:14px;padding:12px 20px;text-align:center;}
+.sstat-num{font-size:1.6rem;font-weight:900;color:var(--gold);}
+.sstat-lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.start-btn{background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;border-radius:40px;padding:14px 46px;font-family:inherit;font-size:1.05rem;font-weight:800;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,.35);transition:all .3s;}
+.start-btn:hover{transform:scale(1.03);}
+.body{max-width:860px;margin:0 auto;padding:20px 16px;}
+.section-title{background:linear-gradient(135deg,var(--dark3),var(--dark2));border:1px solid rgba(201,168,76,.2);border-right:3px solid var(--gold);border-radius:10px;padding:12px 16px;font-size:.95rem;font-weight:700;color:var(--gold);margin:24px 0 16px;}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 18px;margin-bottom:12px;transition:border-color .2s;animation:fadeIn .3s ease;}
+.q-card.answered{border-color:rgba(201,168,76,.35);}
+.q-num{font-size:.78rem;color:var(--muted);margin-bottom:8px;}
+.q-text{font-size:.98rem;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.8;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;align-items:center;gap:12px;padding:11px 15px;border-radius:10px;border:1px solid var(--border);cursor:pointer;transition:all .2s;font-size:.9rem;color:var(--text);background:transparent;text-align:right;font-family:inherit;width:100%;}
+.opt:hover{background:rgba(201,168,76,.06);border-color:rgba(201,168,76,.3);}
+.opt.selected{background:rgba(201,168,76,.12);border-color:var(--gold);color:var(--gold);}
+.opt.correct{background:rgba(63,185,80,.12);border-color:var(--green);color:var(--green);}
+.opt.wrong{background:rgba(248,81,73,.1);border-color:var(--red);color:var(--red);}
+.opt-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;}
+.opt.selected .opt-circle{border-color:var(--gold);color:var(--gold);}
+.opt.correct .opt-circle{border-color:var(--green);color:var(--green);}
+.opt.wrong .opt-circle{border-color:var(--red);color:var(--red);}
+.opt[disabled]{cursor:default;pointer-events:none;}
+.submit-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,17,23,.97);border-top:2px solid rgba(201,168,76,.3);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;backdrop-filter:blur(12px);z-index:200;}
+.submit-info{font-size:.84rem;color:var(--muted);}
+.submit-info strong{color:var(--gold);}
+.submit-btn{background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.result-wrap{max-width:700px;margin:28px auto;padding:0 16px;display:none;}
+.result-card{background:var(--card);border:1.5px solid var(--gold);border-radius:18px;padding:28px 20px;text-align:center;margin-bottom:20px;}
+.result-score{font-size:4rem;font-weight:900;color:var(--gold);line-height:1;}
+.result-total{font-size:1rem;color:var(--muted);margin-top:4px;}
+.result-grade{font-size:1.4rem;font-weight:700;margin:12px 0;}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.rg-item{background:var(--dark3);border-radius:10px;padding:12px 8px;text-align:center;}
+.rg-num{font-size:1.5rem;font-weight:900;}
+.rg-lbl{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.retry-btn{background:linear-gradient(135deg,var(--gold),#a07830);color:var(--dark);border:none;border-radius:30px;padding:12px 32px;font-family:inherit;font-size:.95rem;font-weight:800;cursor:pointer;margin-top:8px;}
+.review-title{font-size:.9rem;font-weight:700;color:var(--gold);margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px;}
+.rv-item{background:var(--dark3);border-radius:10px;padding:12px 14px;margin-bottom:10px;font-size:.86rem;line-height:1.8;}
+.rv-ok{border-right:3px solid var(--green);}
+.rv-no{border-right:3px solid var(--red);}
+.rv-q{color:var(--text);margin-bottom:4px;font-weight:600;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html" class="back-btn">← الرئيسية</a>
+  <span class="topbar-title">🇴🇲 معلومات عن سلطنة عُمان</span>
+</div>
+<div class="prog-wrap"><div class="prog-fill" id="prog-fill"></div></div>
+
+<div class="start-wrap" id="start-screen">
+  <div class="start-card">
+    <div class="start-ico">🇴🇲</div>
+    <div class="start-title">معلومات عن سلطنة عُمان</div>
+    <div class="start-sub">تاريخ وجغرافيا وحكام وأحداث مهمة في تاريخ السلطنة</div>
+    <div class="start-stats">
+      <div class="sstat"><div class="sstat-num">50</div><div class="sstat-lbl">سؤال اختياري</div></div>
+    </div>
+    <button class="start-btn" onclick="startExam()">ابدأ الاختبار ✦</button>
+  </div>
+</div>
+
+<div class="body" id="exam-body" style="display:none">
+  <div id="questions-wrap"></div>
+</div>
+
+<div class="result-wrap" id="result-wrap">
+  <div class="result-card">
+    <div class="result-score" id="res-score">0</div>
+    <div class="result-total" id="res-total"></div>
+    <div class="result-grade" id="res-grade"></div>
+    <div class="result-grid">
+      <div class="rg-item"><div class="rg-num" id="rg-right" style="color:var(--green)">0</div><div class="rg-lbl">✅ صحيح</div></div>
+      <div class="rg-item"><div class="rg-num" id="rg-wrong" style="color:var(--red)">0</div><div class="rg-lbl">❌ خطأ</div></div>
+      <div class="rg-item"><div class="rg-num" id="rg-pct" style="color:var(--gold)">0%</div><div class="rg-lbl">🏆 النسبة</div></div>
+    </div>
+    <button class="retry-btn" onclick="location.reload()">🔄 إعادة الاختبار</button>
+  </div>
+  <div class="result-card">
+    <div class="review-title">📋 مراجعة الإجابات</div>
+    <div id="review-list"></div>
+  </div>
+</div>
+
+<div class="submit-bar" id="submit-bar" style="display:none">
+  <div class="submit-info">أجبت: <strong id="sub-done">0</strong> من <strong id="sub-total">0</strong></div>
+  <button class="submit-btn" onclick="submitExam()">تسليم الاختبار ✓</button>
+</div>
+
+<script>
+var ALL_Q = [
+  // الجغرافيا
+  {t:"الجغرافيا", q:"ما عاصمة سلطنة عُمان؟", o:["صلالة","مسقط","صحار","نزوى"], a:1},
+  {t:"الجغرافيا", q:"كم عدد محافظات سلطنة عُمان؟", o:["9 محافظات","10 محافظات","11 محافظة","12 محافظة"], a:2},
+  {t:"الجغرافيا", q:"ما أكبر محافظات سلطنة عُمان مساحةً؟", o:["محافظة مسقط","محافظة ظفار","محافظة الداخلية","محافظة الوسطى"], a:3},
+  {t:"الجغرافيا", q:"ما أصغر محافظات سلطنة عُمان مساحةً؟", o:["محافظة البريمي","محافظة مسقط","محافظة جنوب الباطنة","محافظة شمال الباطنة"], a:1},
+  {t:"الجغرافيا", q:"على أي بحر تطل سلطنة عُمان من الجنوب؟", o:["البحر الأحمر","البحر الأبيض المتوسط","بحر العرب","بحر قزوين"], a:2},
+  {t:"الجغرافيا", q:"ما المضيق الاستراتيجي الذي تشرف عليه عُمان؟", o:["مضيق باب المندب","مضيق هرمز","مضيق ملقا","مضيق جبل طارق"], a:1},
+  {t:"الجغرافيا", q:"ما أعلى قمة جبلية في سلطنة عُمان؟", o:["جبل شمس","جبل أخضر","جبل قمر","جبل الحجر"], a:0},
+  {t:"الجغرافيا", q:"ما الدول المجاورة لسلطنة عُمان؟", o:["السعودية والإمارات فقط","السعودية والإمارات واليمن","السعودية واليمن فقط","الإمارات واليمن والكويت"], a:1},
+  {t:"الجغرافيا", q:"كم تبلغ مساحة سلطنة عُمان تقريباً؟", o:["200,000 كم²","309,500 كم²","150,000 كم²","450,000 كم²"], a:1},
+  {t:"الجغرافيا", q:"ما ثاني أكبر مدينة في سلطنة عُمان؟", o:["نزوى","صحار","صلالة","السيب"], a:2},
+
+  // التاريخ القديم
+  {t:"التاريخ", q:"متى طرد العُمانيون البرتغاليين من أراضيهم؟", o:["1650م","1744م","1507م","1800م"], a:0},
+  {t:"التاريخ", q:"من قاد العُمانيين في طرد البرتغاليين؟", o:["السلطان قابوس","الإمام ناصر بن مرشد","أحمد بن سعيد","الإمام أحمد بن سعيد"], a:1},
+  {t:"التاريخ", q:"متى وصل البرتغاليون إلى عُمان لأول مرة؟", o:["1507م","1650م","1744م","1600م"], a:0},
+  {t:"التاريخ", q:"من هو مؤسس الدولة البوسعيدية؟", o:["الإمام ناصر بن مرشد","السلطان قابوس","أحمد بن سعيد البوسعيدي","محمد بن نور"], a:2},
+  {t:"التاريخ", q:"متى تأسست الدولة البوسعيدية؟", o:["1507م","1650م","1744م","1800م"], a:2},
+  {t:"التاريخ", q:"كيف طرد أحمد بن سعيد الفرس من عُمان؟", o:["بالقوة العسكرية فقط","بالمفاوضات فقط","بالخداع والحصار ثم إجلائهم","بمساعدة الإنجليز"], a:2},
+  {t:"التاريخ", q:"ما لقب أحمد بن سعيد بعد توحيد عُمان؟", o:["سلطان","ملك","إمام","أمير"], a:2},
+  {t:"التاريخ", q:"ما اسم العاصمة القديمة لعُمان قبل مسقط؟", o:["صحار","نزوى","بهلاء","الرستاق"], a:1},
+  {t:"التاريخ", q:"متى كانت عُمان تحت الاحتلال الفارسي؟", o:["القرن الخامس عشر","القرن السابع عشر (1737-1744م)","القرن الثامن عشر","القرن العاشر"], a:1},
+  {t:"التاريخ", q:"ما اسم الإمام الذي وحّد عُمان وطرد البرتغاليين؟", o:["أحمد بن سعيد","ناصر بن مرشد اليعربي","سلطان بن سيف","محمد بن نور"], a:1},
+
+  // السلطان قابوس
+  {t:"السلطان قابوس", q:"متى تولى السلطان قابوس بن سعيد الحكم؟", o:["1960م","1970م","1975م","1980م"], a:1},
+  {t:"السلطان قابوس", q:"من هو والد السلطان قابوس؟", o:["السلطان تيمور","السلطان فيصل","السلطان سعيد بن تيمور","السلطان طارق"], a:2},
+  {t:"السلطان قابوس", q:"في أي مدينة بريطانية تعلّم السلطان قابوس؟", o:["لندن","مانشستر","إدنبرة","ساندهيرست"], a:3},
+  {t:"السلطان قابوس", q:"ما اسم حركة التحديث التي أطلقها السلطان قابوس عام 1970م؟", o:["الثورة البيضاء","النهضة العُمانية المباركة","التحديث الشامل","البناء الوطني"], a:1},
+  {t:"السلطان قابوس", q:"متى توفي السلطان قابوس بن سعيد رحمه الله؟", o:["يناير 2019م","يناير 2020م","مارس 2020م","ديسمبر 2019م"], a:1},
+  {t:"السلطان قابوس", q:"كم سنة حكم السلطان قابوس بن سعيد؟", o:["40 سنة","45 سنة","50 سنة","35 سنة"], a:2},
+  {t:"السلطان قابوس", q:"من تولى الحكم بعد السلطان قابوس؟", o:["السلطان أسعد","السلطان هيثم بن طارق","السلطان ثيمور","السلطان فهد"], a:1},
+  {t:"السلطان قابوس", q:"متى تولى السلطان هيثم بن طارق الحكم؟", o:["يناير 2019م","يناير 2020م","مارس 2020م","فبراير 2020م"], a:1},
+  {t:"السلطان قابوس", q:"ما اسم الجامعة التي أسسها السلطان قابوس؟", o:["جامعة السلطان قابوس","جامعة مسقط","جامعة عُمان","جامعة الخليج"], a:0},
+  {t:"السلطان قابوس", q:"في أي عام انضمت عُمان إلى مجلس التعاون الخليجي؟", o:["1980م","1981م","1982م","1985م"], a:1},
+
+  // الرموز الوطنية
+  {t:"الرموز الوطنية", q:"ما ألوان علم سلطنة عُمان؟", o:["أحمر وأبيض وأخضر","أحمر وأبيض فقط","أخضر وأبيض وأسود","أحمر وأزرق وأبيض"], a:0},
+  {t:"الرموز الوطنية", q:"ماذا يمثل اللون الأحمر في علم عُمان؟", o:["البحر","الشهداء والتضحية","الخضرة والزراعة","الوحدة الوطنية"], a:1},
+  {t:"الرموز الوطنية", q:"ماذا يمثل اللون الأخضر في علم عُمان؟", o:["الجبال","الدين والخضرة والزراعة","الشهداء","البحر"], a:1},
+  {t:"الرموز الوطنية", q:"ما الذي يمثله شعار سلطنة عُمان (الخنجرين والسيف)؟", o:["القوة العسكرية فقط","التراث العُماني الأصيل والقوة","الصيد البحري","الزراعة"], a:1},
+  {t:"الرموز الوطنية", q:"متى يُحتفل باليوم الوطني لسلطنة عُمان؟", o:["18 نوفمبر","23 يوليو","1 يناير","14 نوفمبر"], a:0},
+  {t:"الرموز الوطنية", q:"لماذا يُحتفل باليوم الوطني في 18 نوفمبر؟", o:["استقلال عُمان عن بريطانيا","يوم ميلاد السلطان قابوس","يوم توحيد عُمان","يوم طرد البرتغاليين"], a:1},
+  {t:"الرموز الوطنية", q:"ما عملة سلطنة عُمان؟", o:["الدرهم","الدينار","الريال العُماني","القرش"], a:2},
+
+  // المؤسسات والتطور
+  {t:"المؤسسات", q:"متى تأسست شرطة عُمان السلطانية بشكلها الحديث؟", o:["1960م","1970م","1975م","1980م"], a:1},
+  {t:"المؤسسات", q:"ما اسم البرلمان في سلطنة عُمان؟", o:["مجلس الأمة","مجلس عُمان","مجلس الشورى","المجلس الوطني"], a:1},
+  {t:"المؤسسات", q:"متى صدر النظام الأساسي للدولة العُمانية؟", o:["1990م","1996م","2000م","1985م"], a:1},
+  {t:"المؤسسات", q:"ما نظام الحكم في سلطنة عُمان؟", o:["ملكي دستوري","جمهوري","سلطاني وراثي","فيدرالي"], a:2},
+  {t:"المؤسسات", q:"في أي عام انضمت عُمان إلى جامعة الدول العربية؟", o:["1971م","1981م","1990م","1975م"], a:0},
+  {t:"المؤسسات", q:"ما اسم وكالة الأنباء الرسمية في عُمان؟", o:["وكالة أنباء الخليج","وكالة الأنباء العُمانية (ONA)","وكالة أنباء مسقط","وكالة الشرق"], a:1},
+
+  // التراث والحضارة
+  {t:"التراث", q:"ما أبرز الصناعات التقليدية العُمانية؟", o:["صناعة السيارات","الخنجر والحلي الفضية والسفن التقليدية","الإلكترونيات","النسيج الصناعي"], a:1},
+  {t:"التراث", q:"ما اسم الزي الرسمي التقليدي للرجل العُماني؟", o:["الثوب والغترة","الدشداشة والكمة والعمامة","الجلابية","الكندورة"], a:1},
+  {t:"التراث", q:"ما اسم القلعة الأشهر في عُمان والتي تعد من أجمل القلاع العربية؟", o:["قلعة نزوى","قلعة بهلاء","قلعة الجلالي","قلعة الميراني"], a:0},
+  {t:"التراث", q:"في أي قائمة تراث اليونسكو أُدرجت أفلاج عُمان؟", o:["التراث الطبيعي","التراث العالمي غير المادي","التراث العالمي المادي","قائمة التراث المهدد"], a:2},
+  {t:"التراث", q:"ما اسم المهرجان الثقافي السنوي الشهير في مسقط؟", o:["مهرجان مسقط","مهرجان الخريف","مهرجان عُمان","مهرجان قريات"], a:0},
+  {t:"التراث", q:"ما اسم المهرجان السياحي الشهير في صلالة؟", o:["مهرجان مسقط","مهرجان الخريف","مهرجان الربيع","مهرجان الصيف"], a:1},
+  {t:"التراث", q:"متى تأسست أوبرا مسقط (دار الأوبرا)؟", o:["2000م","2005م","2011م","2015م"], a:2},
+  {t:"التراث", q:"ما الاسم القديم لسلطنة عُمان؟", o:["بلاد الشحر","مسقط وعُمان","أرض اللبان","الجزيرة العربية"], a:1}
+];
+
+window.ALL_Q = ALL_Q;
+
+var questions = [];
+var userAns = [];
+var submitted = false;
+var letters = ['أ','ب','ج','د'];
+
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+function startExam(){
+  questions = shuffle(ALL_Q);
+  userAns = new Array(questions.length).fill(null);
+  submitted = false;
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('exam-body').style.display='block';
+  document.getElementById('submit-bar').style.display='flex';
+  document.getElementById('sub-total').textContent = questions.length;
+  buildQuestions();
+  window.scrollTo(0,0);
+}
+
+function buildQuestions(){
+  var sections = {};
+  questions.forEach(function(q,i){
+    if(!sections[q.t]) sections[q.t]=[];
+    sections[q.t].push(i);
+  });
+
+  var html='';
+  var qNum=0;
+  Object.keys(sections).forEach(function(sec){
+    html+='<div class="section-title">'+sec+'</div>';
+    sections[sec].forEach(function(i){
+      qNum++;
+      var q=questions[i];
+      var opts=shuffle(q.o.map(function(o,j){return {t:o,j:j};}));
+      questions[i]._opts=opts;
+      var optsHtml=opts.map(function(o,k){
+        return '<button class="opt" onclick="pick('+i+','+o.j+')" data-orig="'+o.j+'" id="opt-'+i+'-'+o.j+'">'+
+          '<div class="opt-circle">'+letters[k]+'</div>'+o.t+'</button>';
+      }).join('');
+      html+='<div class="q-card" id="qc-'+i+'">'+
+        '<div class="q-num">سؤال '+qNum+'</div>'+
+        '<div class="q-text">'+q.q+'</div>'+
+        '<div class="opts">'+optsHtml+'</div></div>';
+    });
+  });
+  document.getElementById('questions-wrap').innerHTML=html;
+}
+
+function pick(qi,origIdx){
+  if(submitted) return;
+  document.querySelectorAll('#qc-'+qi+' .opt').forEach(function(o){o.classList.remove('selected');});
+  document.getElementById('opt-'+qi+'-'+origIdx).classList.add('selected');
+  userAns[qi]=origIdx;
+  document.getElementById('qc-'+qi).classList.add('answered');
+  var done=userAns.filter(function(a){return a!==null;}).length;
+  document.getElementById('prog-fill').style.width=(done/questions.length*100)+'%';
+  document.getElementById('sub-done').textContent=done;
+}
+
+function submitExam(){
+  if(submitted) return;
+  submitted=true;
+  var ok=0,total=questions.length,reviewHtml='';
+  questions.forEach(function(q,i){
+    document.querySelectorAll('#qc-'+i+' .opt').forEach(function(o){
+      o.disabled=true;
+      var orig=parseInt(o.dataset.orig);
+      if(orig===q.a) o.classList.add('correct');
+      else if(o.classList.contains('selected')) o.classList.add('wrong');
+    });
+    if(userAns[i]===q.a){
+      ok++;
+      reviewHtml+='<div class="rv-item rv-ok"><div class="rv-q">✅ '+q.q+'</div></div>';
+    } else {
+      reviewHtml+='<div class="rv-item rv-no"><div class="rv-q">❌ '+q.q+'</div><div style="color:var(--red);font-size:.82rem;margin-top:4px">الإجابة الصحيحة: '+q.o[q.a]+'</div></div>';
+    }
+  });
+  var pct=Math.round(ok/total*100);
+  var grade=pct>=90?'🌟 ممتاز':pct>=80?'🏅 جيد جداً':pct>=70?'✨ جيد':pct>=60?'📚 مقبول':'💪 يحتاج مراجعة';
+  document.getElementById('submit-bar').style.display='none';
+  document.getElementById('result-wrap').style.display='block';
+  document.getElementById('res-score').textContent=ok;
+  document.getElementById('res-total').textContent='من '+total+' سؤالاً';
+  document.getElementById('res-grade').textContent=grade;
+  document.getElementById('rg-right').textContent=ok;
+  document.getElementById('rg-wrong').textContent=total-ok;
+  document.getElementById('rg-pct').textContent=pct+'%';
+  document.getElementById('review-list').innerHTML=reviewHtml;
+  document.getElementById('result-wrap').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
