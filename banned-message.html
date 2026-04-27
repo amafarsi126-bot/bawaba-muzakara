@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تم حظر حسابك — بوابة المذاكرة</title>
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;
+  --card:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;
+  --green:#3fb950;--red:#f85149;--blue:#58a6ff;--orange:#e8892a;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Segoe UI','Tahoma','Arial',sans-serif;
+  background:var(--dark);
+  color:var(--text);
+  min-height:100vh;
+  direction:rtl;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.container{
+  max-width:500px;
+  width:100%;
+}
+
+.ban-card{
+  background:var(--card);
+  border:2px solid var(--red);
+  border-radius:16px;
+  padding:40px 24px;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(248,81,73,.15);
+}
+
+.ban-icon{
+  font-size:4rem;
+  margin-bottom:20px;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%, 100%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+}
+
+.ban-title{
+  font-size:1.8rem;
+  font-weight:900;
+  color:var(--red);
+  margin-bottom:12px;
+}
+
+.ban-subtitle{
+  font-size:.95rem;
+  color:var(--muted);
+  margin-bottom:24px;
+  line-height:1.6;
+}
+
+.ban-details{
+  background:rgba(248,81,73,.05);
+  border:1px solid rgba(248,81,73,.2);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:24px;
+  text-align:right;
+}
+
+.detail-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid rgba(248,81,73,.1);
+  font-size:.9rem;
+}
+
+.detail-item:last-child{
+  border-bottom:none;
+}
+
+.detail-label{
+  color:var(--muted);
+  font-weight:600;
+}
+
+.detail-value{
+  color:var(--text);
+  font-weight:700;
+  font-family:monospace;
+}
+
+.ban-reason{
+  background:rgba(232,137,42,.05);
+  border-right:3px solid var(--orange);
+  padding:12px 16px;
+  border-radius:8px;
+  margin-bottom:24px;
+  text-align:right;
+}
+
+.ban-reason-label{
+  font-size:.8rem;
+  color:var(--orange);
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.ban-reason-text{
+  font-size:.95rem;
+  color:var(--text);
+}
+
+.supervisor-section{
+  background:rgba(88,166,255,.05);
+  border:1px solid rgba(88,166,255,.2);
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:24px;
+}
+
+.supervisor-title{
+  font-size:.9rem;
+  color:var(--blue);
+  font-weight:800;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.supervisor-info{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.contact-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  background:var(--dark3);
+  border-radius:8px;
+  cursor:pointer;
+  transition:all .2s;
+}
+
+.contact-item:hover{
+  background:rgba(88,166,255,.1);
+  transform:translateX(-4px);
+}
+
+.contact-icon{
+  font-size:1.2rem;
+  min-width:30px;
+}
+
+.contact-info{
+  flex:1;
+  text-align:right;
+}
+
+.contact-label{
+  font-size:.75rem;
+  color:var(--muted);
+}
+
+.contact-value{
+  font-size:.9rem;
+  color:var(--text);
+  font-weight:700;
+  word-break:break-all;
+}
+
+.action-buttons{
+  display:flex;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.btn{
+  flex:1;
+  padding:12px 16px;
+  border-radius:10px;
+  border:none;
+  font-family:inherit;
+  font-size:.9rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,var(--blue),#1f6feb);
+  color:var(--dark);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 5px 15px rgba(88,166,255,.3);
+}
+
+.btn-secondary{
+  background:rgba(139,148,158,.1);
+  color:var(--muted);
+  border:1px solid var(--border);
+}
+
+.btn-secondary:hover{
+  background:rgba(139,148,158,.2);
+}
+
+.warning-box{
+  background:rgba(248,81,73,.1);
+  border-left:4px solid var(--red);
+  padding:16px;
+  border-radius:8px;
+  margin-top:20px;
+  font-size:.85rem;
+  line-height:1.6;
+  color:var(--text);
+}
+
+.warning-title{
+  color:var(--red);
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.timer{
+  font-size:1.2rem;
+  color:var(--orange);
+  font-weight:900;
+  margin:20px 0;
+}
+
+.appeal-section{
+  background:rgba(63,185,80,.05);
+  border:1px solid rgba(63,185,80,.2);
+  border-radius:12px;
+  padding:16px;
+  margin-top:20px;
+}
+
+.appeal-title{
+  color:var(--green);
+  font-weight:800;
+  margin-bottom:8px;
+  font-size:.9rem;
+}
+
+.appeal-text{
+  font-size:.85rem;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+@media(max-width:480px){
+  .ban-card{
+    padding:24px 16px;
+  }
+  
+  .ban-icon{
+    font-size:3rem;
+  }
+  
+  .ban-title{
+    font-size:1.4rem;
+  }
+  
+  .action-buttons{
+    flex-direction:column;
+  }
+}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="ban-card">
+    <div class="ban-icon">🚫</div>
+    
+    <div class="ban-title">تم حظر حسابك</div>
+    <div class="ban-subtitle">
+      عذراً، تم حظر هذا الرقم من استخدام البرنامج.<br>
+      يرجى التواصل مع المشرف للمزيد من المعلومات.
+    </div>
+
+    <!-- BAN DETAILS -->
+    <div class="ban-details">
+      <div class="detail-item">
+        <span class="detail-value" id="phone-display">-</span>
+        <span class="detail-label">رقم الهاتف:</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-value" id="ban-date-display">-</span>
+        <span class="detail-label">تاريخ الحظر:</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-value" id="ban-duration-display">دائم</span>
+        <span class="detail-label">نوع الحظر:</span>
+      </div>
+    </div>
+
+    <!-- BAN REASON -->
+    <div class="ban-reason">
+      <div class="ban-reason-label">سبب الحظر:</div>
+      <div class="ban-reason-text" id="ban-reason-display">-</div>
+    </div>
+
+    <!-- COUNTDOWN TIMER (if temporary ban) -->
+    <div class="timer" id="timer-display" style="display:none;"></div>
+
+    <!-- SUPERVISOR CONTACT -->
+    <div class="supervisor-section">
+      <div class="supervisor-title">
+        <span>📞</span>
+        <span>تواصل مع المشرف</span>
+      </div>
+      
+      <div class="supervisor-info">
+        <div class="contact-item" onclick="copyToClipboard(this)">
+          <div class="contact-icon">👤</div>
+          <div class="contact-info">
+            <div class="contact-label">اسم المشرف</div>
+            <div class="contact-value" id="supervisor-name">-</div>
+          </div>
+        </div>
+
+        <div class="contact-item" onclick="openWhatsApp()">
+          <div class="contact-icon">💬</div>
+          <div class="contact-info">
+            <div class="contact-label">واتس أب</div>
+            <div class="contact-value" id="supervisor-whatsapp">-</div>
+          </div>
+        </div>
+
+        <div class="contact-item" onclick="copyToClipboard(this)">
+          <div class="contact-icon">📧</div>
+          <div class="contact-info">
+            <div class="contact-label">البريد الإلكتروني</div>
+            <div class="contact-value" id="supervisor-email">-</div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">🕐</div>
+          <div class="contact-info">
+            <div class="contact-label">ساعات العمل</div>
+            <div class="contact-value" id="supervisor-hours">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPEAL SECTION -->
+    <div class="appeal-section" id="appeal-section">
+      <div class="appeal-title">🔄 طلب إلغاء الحظر</div>
+      <div class="appeal-text">
+        إذا كنت تعتقد أن هذا الحظر خطأ، يمكنك التواصل مع المشرف لطلب إلغاء الحظر.
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-buttons">
+      <button class="btn btn-primary" onclick="openWhatsApp()">
+        💬 تواصل عبر واتس
+      </button>
+      <button class="btn btn-secondary" onclick="goHome()">
+        🏠 الرئيسية
+      </button>
+    </div>
+
+    <!-- WARNING -->
+    <div class="warning-box">
+      <div class="warning-title">⚠️ تنبيه مهم</div>
+      <div>
+        محاولة تجاوز هذا الحظر باستخدام أرقام أخرى قد تؤدي إلى عقوبات أشد.
+        يرجى التواصل مع المشرف بشكل مباشر.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="message-system.js"></script>
+<script>
+// ── GET BAN INFO FROM URL ──
+function getBanInfoFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('phone');
+}
+
+// ── LOAD BAN INFO ──
+function loadBanInfo() {
+  const phone = getBanInfoFromURL();
+  if (!phone) {
+    console.error('لم يتم تحديد رقم الهاتف');
+    return;
+  }
+
+  const banInfo = messageSystem.getBanInfo(phone);
+  const supervisor = messageSystem.getSupervisorInfo();
+
+  if (!banInfo) {
+    console.error('لم يتم العثور على معلومات الحظر');
+    return;
+  }
+
+  // عرض معلومات الحظر
+  document.getElementById('phone-display').textContent = phone;
+  document.getElementById('ban-reason-display').textContent = banInfo.reason;
+  
+  // تنسيق التاريخ
+  const banDate = new Date(banInfo.bannedAt);
+  document.getElementById('ban-date-display').textContent = 
+    banDate.toLocaleDateString('ar-SA', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+  // نوع الحظر
+  if (banInfo.duration) {
+    document.getElementById('ban-duration-display').textContent = 
+      `مؤقت (${banInfo.duration} ساعة)`;
+    startCountdown(banInfo.bannedAt, banInfo.duration);
+  }
+
+  // معلومات المشرف
+  document.getElementById('supervisor-name').textContent = supervisor.name;
+  document.getElementById('supervisor-whatsapp').textContent = supervisor.whatsapp;
+  document.getElementById('supervisor-email').textContent = supervisor.email;
+  document.getElementById('supervisor-hours').textContent = supervisor.workHours;
+}
+
+// ── START COUNTDOWN ──
+function startCountdown(bannedAt, duration) {
+  const timerDisplay = document.getElementById('timer-display');
+  timerDisplay.style.display = 'block';
+
+  function updateTimer() {
+    const bannedTime = new Date(bannedAt);
+    const now = new Date();
+    const elapsed = (now - bannedTime) / (1000 * 60 * 60);
+    const remaining = duration - elapsed;
+
+    if (remaining <= 0) {
+      timerDisplay.innerHTML = '✅ انتهت مدة الحظر! يمكنك محاولة الدخول مرة أخرى.';
+      timerDisplay.style.color = 'var(--green)';
+      clearInterval(interval);
+      return;
+    }
+
+    const hours = Math.floor(remaining);
+    const minutes = Math.floor((remaining % 1) * 60);
+    
+    timerDisplay.innerHTML = `⏱️ الوقت المتبقي: ${hours} ساعة و ${minutes} دقيقة`;
+  }
+
+  updateTimer();
+  const interval = setInterval(updateTimer, 60000); // تحديث كل دقيقة
+}
+
+// ── OPEN WHATSAPP ──
+function openWhatsApp() {
+  const phone = getBanInfoFromURL();
+  const supervisor = messageSystem.getSupervisorInfo();
+  const message = `السلام عليكم، أنا الرقم ${phone} تم حظر حسابي، هل يمكنك مساعدتي؟`;
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappNumber = supervisor.whatsapp.replace(/\D/g, '');
+  
+  window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+}
+
+// ── COPY TO CLIPBOARD ──
+function copyToClipboard(element) {
+  const text = element.querySelector('.contact-value').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = element.querySelector('.contact-label').textContent;
+    element.querySelector('.contact-label').textContent = '✅ تم النسخ!';
+    setTimeout(() => {
+      element.querySelector('.contact-label').textContent = originalText;
+    }, 2000);
+  });
+}
+
+// ── GO HOME ──
+function goHome() {
+  window.location.href = 'index.html';
+}
+
+// ── LOAD ON STARTUP ──
+window.addEventListener('load', loadBanInfo);
+</script>
+</body>
+</html>

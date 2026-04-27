@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم الإدارية المتقدمة — بوابة المذاكرة</title>
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;
+  --card:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;
+  --green:#3fb950;--red:#f85149;--blue:#58a6ff;--orange:#e8892a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,var(--dark3),var(--dark2));border-bottom:2px solid var(--gold);padding:20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,.3);}
+.logo{font-size:1.4rem;font-weight:900;color:var(--gold);display:flex;align-items:center;gap:10px;}
+.nav-buttons{display:flex;gap:10px;}
+.nav-btn{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:10px 16px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.nav-btn:hover{background:rgba(201,168,76,.2);transform:translateY(-2px);}
+.nav-btn.danger{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.3);color:var(--red);}
+.nav-btn.danger:hover{background:rgba(248,81,73,.2);}
+
+/* CONTAINER */
+.container{max-width:1400px;margin:0 auto;padding:20px;}
+
+/* TABS */
+.tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:10px;overflow-x:auto;}
+.tab{background:transparent;border:none;color:var(--muted);padding:12px 20px;cursor:pointer;font-size:.95rem;font-weight:700;font-family:inherit;transition:all .2s;border-bottom:3px solid transparent;margin-bottom:-10px;white-space:nowrap;}
+.tab:hover{color:var(--gold);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* SECTION */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+.section-title{font-size:1.2rem;font-weight:900;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--dark3);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:all .2s;}
+.stat-card:hover{border-color:var(--gold);transform:translateY(-4px);}
+.stat-num{font-size:2.2rem;font-weight:900;margin-bottom:4px;}
+.stat-label{font-size:.85rem;color:var(--muted);}
+.stat-card.critical .stat-num{color:var(--red);}
+.stat-card.warning .stat-num{color:var(--orange);}
+.stat-card.success .stat-num{color:var(--green);}
+.stat-card.info .stat-num{color:var(--blue);}
+
+/* FORM */
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:8px;font-family:inherit;font-size:.9rem;direction:rtl;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.1);}
+.form-textarea{resize:vertical;min-height:100px;}
+
+/* BUTTONS */
+.btn{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:12px 24px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{background:rgba(201,168,76,.2);transform:translateY(-2px);}
+.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--dark);border:none;}
+.btn.primary:hover{box-shadow:0 8px 24px rgba(201,168,76,.3);}
+.btn.danger{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.3);color:var(--red);}
+.btn.danger:hover{background:rgba(248,81,73,.2);}
+.btn.success{background:rgba(63,185,80,.1);border-color:rgba(63,185,80,.3);color:var(--green);}
+.btn.success:hover{background:rgba(63,185,80,.2);}
+
+/* TABLE */
+.table-container{overflow-x:auto;margin-bottom:20px;}
+.table{width:100%;border-collapse:collapse;}
+.table th{background:var(--dark3);padding:12px;text-align:right;font-weight:700;border-bottom:2px solid var(--border);font-size:.85rem;color:var(--muted);}
+.table td{padding:12px;border-bottom:1px solid var(--border);font-size:.9rem;}
+.table tr:hover{background:rgba(201,168,76,.05);}
+
+/* BADGES */
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;}
+.badge.active{background:rgba(63,185,80,.2);color:var(--green);}
+.badge.banned{background:rgba(248,81,73,.2);color:var(--red);}
+.badge.pending{background:rgba(232,137,42,.2);color:var(--orange);}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+
+/* MODAL */
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;}
+.modal.show{display:flex;}
+.modal-content{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal-title{font-size:1.3rem;font-weight:900;color:var(--gold);margin-bottom:16px;}
+.modal-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;}
+
+/* SEARCH */
+.search-box{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:200px;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-family:inherit;font-size:.9rem;direction:rtl;}
+.search-input:focus{outline:none;border-color:var(--gold);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:12px;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .grid-2{grid-template-columns:1fr;}
+  .table{font-size:.8rem;}
+  .table th,.table td{padding:8px;}
+}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🎓 لوحة التحكم الإدارية المتقدمة</div>
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="goBack()">← رجوع</button>
+    <button class="nav-btn danger" onclick="logout()">خروج</button>
+  </div>
+</div>
+
+<div class="container">
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('dashboard')">📊 لوحة التحكم</button>
+    <button class="tab" onclick="switchTab('banned-users')">🚫 المستخدمون المحظورون</button>
+    <button class="tab" onclick="switchTab('supervisor')">👤 معلومات المشرف</button>
+    <button class="tab" onclick="switchTab('reports')">📈 التقارير</button>
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div id="tab-dashboard" class="tab-content">
+    <div class="stats-grid">
+      <div class="stat-card success">
+        <div class="stat-num" id="total-users">0</div>
+        <div class="stat-label">إجمالي المستخدمين</div>
+      </div>
+      <div class="stat-card info">
+        <div class="stat-num" id="active-users">0</div>
+        <div class="stat-label">نشطون</div>
+      </div>
+      <div class="stat-card critical">
+        <div class="stat-num" id="banned-users">0</div>
+        <div class="stat-label">محظورون</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-num" id="avg-rating">0</div>
+        <div class="stat-label">متوسط التقييم</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📋 آخر النشاطات</div>
+      <div id="recent-activities"></div>
+    </div>
+  </div>
+
+  <!-- BANNED USERS TAB -->
+  <div id="tab-banned-users" class="tab-content" style="display:none;">
+    <div class="section">
+      <div class="section-title">🚫 إدارة المستخدمين المحظورين</div>
+      
+      <div class="search-box">
+        <input type="text" class="search-input" id="banned-search" placeholder="🔍 ابحث برقم الهاتف..." oninput="filterBannedUsers()">
+        <button class="btn primary" onclick="openBanModal()">➕ حظر مستخدم جديد</button>
+      </div>
+
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>رقم الهاتف</th>
+              <th>السبب</th>
+              <th>تاريخ الحظر</th>
+              <th>النوع</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="banned-users-table">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPERVISOR TAB -->
+  <div id="tab-supervisor" class="tab-content" style="display:none;">
+    <div class="section">
+      <div class="section-title">👤 معلومات المشرف</div>
+      
+      <div class="grid-2">
+        <div>
+          <div class="form-group">
+            <label class="form-label">اسم المشرف</label>
+            <input type="text" class="form-input" id="supervisor-name" placeholder="أدخل اسم المشرف">
+          </div>
+          <div class="form-group">
+            <label class="form-label">رقم الهاتف</label>
+            <input type="text" class="form-input" id="supervisor-phone" placeholder="96898981098">
+          </div>
+          <div class="form-group">
+            <label class="form-label">واتس أب</label>
+            <input type="text" class="form-input" id="supervisor-whatsapp" placeholder="96898981098">
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label class="form-label">البريد الإلكتروني</label>
+            <input type="email" class="form-input" id="supervisor-email" placeholder="supervisor@bawaba.om">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ساعات العمل</label>
+            <input type="text" class="form-input" id="supervisor-hours" placeholder="8:00 - 16:00">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ملاحظات إضافية</label>
+            <textarea class="form-textarea" id="supervisor-notes" placeholder="أي معلومات إضافية..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:20px;">
+        <button class="btn primary" onclick="saveSupervisorInfo()">💾 حفظ المعلومات</button>
+        <button class="btn" onclick="loadSupervisorInfo()">🔄 تحديث</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTS TAB -->
+  <div id="tab-reports" class="tab-content" style="display:none;">
+    <div class="section">
+      <div class="section-title">📈 التقارير والإحصائيات</div>
+      
+      <div class="grid-2">
+        <div>
+          <h3 style="color:var(--gold);margin-bottom:12px;">📊 توزيع الحظر</h3>
+          <div id="ban-distribution"></div>
+        </div>
+        <div>
+          <h3 style="color:var(--gold);margin-bottom:12px;">🎯 أسباب الحظر الأكثر</h3>
+          <div id="ban-reasons"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn primary" onclick="exportReport()">📥 تصدير التقرير</button>
+        <button class="btn" onclick="printReport()">🖨️ طباعة</button>
+        <button class="btn" onclick="generatePDF()">📄 PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BAN MODAL -->
+<div id="ban-modal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeBanModal()">✕</button>
+    <div class="modal-title">🚫 حظر مستخدم جديد</div>
+    
+    <div class="form-group">
+      <label class="form-label">رقم الهاتف</label>
+      <input type="text" class="form-input" id="new-ban-phone" placeholder="96898765432">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">سبب الحظر</label>
+      <select class="form-select" id="new-ban-reason">
+        <option>اختر السبب</option>
+        <option>الغش في الاختبار</option>
+        <option>انتهاك القوانين</option>
+        <option>سلوك غير لائق</option>
+        <option>محاولة اختراق</option>
+        <option>أخرى</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">مدة الحظر (بالساعات)</label>
+      <input type="number" class="form-input" id="new-ban-duration" placeholder="اترك فارغاً للحظر الدائم">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">ملاحظات</label>
+      <textarea class="form-textarea" id="new-ban-notes" placeholder="أي معلومات إضافية..."></textarea>
+    </div>
+    
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn primary" onclick="confirmBan()">✓ حظر</button>
+      <button class="btn" onclick="closeBanModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<script src="protection-system.js"></script>
+<script src="message-system.js"></script>
+<script>
+let bannedUsers = [];
+let supervisorInfo = {};
+
+// ── LOAD DATA ──
+function loadData() {
+  bannedUsers = messageSystem.getBannedUsers();
+  supervisorInfo = messageSystem.getSupervisorInfo();
+  updateStats();
+  renderBannedUsers();
+  loadSupervisorInfo();
+}
+
+// ── UPDATE STATS ──
+function updateStats() {
+  const allUsers = bannedUsers.length;
+  const active = bannedUsers.filter(b => b.status === 'active').length;
+  const banned = bannedUsers.filter(b => b.status === 'banned').length;
+  
+  document.getElementById('total-users').textContent = allUsers;
+  document.getElementById('active-users').textContent = active;
+  document.getElementById('banned-users').textContent = banned;
+  document.getElementById('avg-rating').textContent = '4.5';
+}
+
+// ── RENDER BANNED USERS ──
+function renderBannedUsers() {
+  const tbody = document.getElementById('banned-users-table');
+  
+  if (bannedUsers.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);">لا توجد مستخدمين محظورين</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = bannedUsers.map(user => `
+    <tr>
+      <td>${user.phone}</td>
+      <td>${user.reason}</td>
+      <td>${new Date(user.bannedAt).toLocaleDateString('ar-SA')}</td>
+      <td>
+        <span class="badge ${user.duration ? 'pending' : 'banned'}">
+          ${user.duration ? 'مؤقت' : 'دائم'}
+        </span>
+      </td>
+      <td>
+        <button class="btn" style="padding:6px 12px;font-size:.8rem;" onclick="editBan('${user.phone}')">✏️</button>
+        <button class="btn danger" style="padding:6px 12px;font-size:.8rem;" onclick="removeBan('${user.phone}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── FILTER BANNED USERS ──
+function filterBannedUsers() {
+  const search = document.getElementById('banned-search').value.toLowerCase();
+  const filtered = bannedUsers.filter(u => u.phone.includes(search));
+  
+  const tbody = document.getElementById('banned-users-table');
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);">لا توجد نتائج</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(user => `
+    <tr>
+      <td>${user.phone}</td>
+      <td>${user.reason}</td>
+      <td>${new Date(user.bannedAt).toLocaleDateString('ar-SA')}</td>
+      <td>
+        <span class="badge ${user.duration ? 'pending' : 'banned'}">
+          ${user.duration ? 'مؤقت' : 'دائم'}
+        </span>
+      </td>
+      <td>
+        <button class="btn" style="padding:6px 12px;font-size:.8rem;" onclick="editBan('${user.phone}')">✏️</button>
+        <button class="btn danger" style="padding:6px 12px;font-size:.8rem;" onclick="removeBan('${user.phone}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── OPEN BAN MODAL ──
+function openBanModal() {
+  document.getElementById('ban-modal').classList.add('show');
+}
+
+// ── CLOSE BAN MODAL ──
+function closeBanModal() {
+  document.getElementById('ban-modal').classList.remove('show');
+  document.getElementById('new-ban-phone').value = '';
+  document.getElementById('new-ban-reason').value = '';
+  document.getElementById('new-ban-duration').value = '';
+  document.getElementById('new-ban-notes').value = '';
+}
+
+// ── CONFIRM BAN ──
+function confirmBan() {
+  const phone = document.getElementById('new-ban-phone').value.trim();
+  const reason = document.getElementById('new-ban-reason').value;
+  const duration = document.getElementById('new-ban-duration').value;
+  
+  if (!phone || reason === 'اختر السبب') {
+    alert('❌ أدخل البيانات المطلوبة');
+    return;
+  }
+
+  const fullPhone = phone.includes('968') ? phone : '968' + phone.replace(/\D/g, '');
+  const durationNum = duration ? parseInt(duration) : null;
+  
+  messageSystem.banUser(fullPhone, reason, durationNum);
+  bannedUsers = messageSystem.getBannedUsers();
+  
+  renderBannedUsers();
+  closeBanModal();
+  alert('✅ تم حظر المستخدم بنجاح');
+}
+
+// ── REMOVE BAN ──
+function removeBan(phone) {
+  if (!confirm('هل تريد رفع الحظر؟')) return;
+  
+  messageSystem.unbanUser(phone);
+  bannedUsers = messageSystem.getBannedUsers();
+  
+  renderBannedUsers();
+  alert('✅ تم رفع الحظر بنجاح');
+}
+
+// ── LOAD SUPERVISOR INFO ──
+function loadSupervisorInfo() {
+  const info = messageSystem.getSupervisorInfo();
+  
+  document.getElementById('supervisor-name').value = info.name || '';
+  document.getElementById('supervisor-phone').value = info.phone || '';
+  document.getElementById('supervisor-whatsapp').value = info.whatsapp || '';
+  document.getElementById('supervisor-email').value = info.email || '';
+  document.getElementById('supervisor-hours').value = info.workHours || '';
+  document.getElementById('supervisor-notes').value = info.notes || '';
+}
+
+// ── SAVE SUPERVISOR INFO ──
+function saveSupervisorInfo() {
+  const info = {
+    name: document.getElementById('supervisor-name').value,
+    phone: document.getElementById('supervisor-phone').value,
+    whatsapp: document.getElementById('supervisor-whatsapp').value,
+    email: document.getElementById('supervisor-email').value,
+    workHours: document.getElementById('supervisor-hours').value,
+    notes: document.getElementById('supervisor-notes').value
+  };
+
+  messageSystem.updateSupervisorInfo(info);
+  alert('✅ تم حفظ المعلومات بنجاح');
+}
+
+// ── SWITCH TAB ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById('tab-' + tab).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+// ── EXPORT REPORT ──
+function exportReport() {
+  const report = messageSystem.generateBanReport();
+  const data = JSON.stringify(report, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ban-report-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ تم تصدير التقرير');
+}
+
+// ── PRINT REPORT ──
+function printReport() {
+  window.print();
+}
+
+// ── GENERATE PDF ──
+function generatePDF() {
+  alert('📄 سيتم توفير هذه الميزة قريباً');
+}
+
+// ── NAVIGATION ──
+function goBack() {
+  window.location.href = 'admin-panel.html';
+}
+
+function logout() {
+  localStorage.removeItem('pwa_user');
+  window.location.href = 'index.html';
+}
+
+// Load on startup
+window.addEventListener('load', loadData);
+</script>
+</body>
+</html>

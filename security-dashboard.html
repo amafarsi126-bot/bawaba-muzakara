@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الأمان — بوابة المذاكرة</title>
+<meta name="theme-color" content="#0d1117">
+<style>
+:root{
+  --gold:#c9a84c;--gold2:#e8c96a;
+  --dark:#0d1117;--dark2:#161b22;--dark3:#1c2333;
+  --card:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;
+  --green:#3fb950;--red:#f85149;--blue:#58a6ff;--orange:#e8892a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;direction:rtl;}
+
+/* HEADER */
+.header{background:var(--dark3);border-bottom:2px solid var(--gold);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.title{font-size:1.3rem;font-weight:900;color:var(--gold);}
+.actions{display:flex;gap:10px;}
+.btn{background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:var(--gold);padding:8px 16px;border-radius:10px;font-size:.86rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.btn:hover{background:rgba(201,168,76,.2);}
+.btn.danger{background:rgba(248,81,73,.1);border-color:rgba(248,81,73,.3);color:var(--red);}
+.btn.danger:hover{background:rgba(248,81,73,.2);}
+
+/* CONTAINER */
+.container{max-width:1200px;margin:0 auto;padding:20px;}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+.stat-num{font-size:2rem;font-weight:900;margin-bottom:4px;}
+.stat-label{font-size:.85rem;color:var(--muted);}
+.stat-card.critical .stat-num{color:var(--red);}
+.stat-card.warning .stat-num{color:var(--orange);}
+.stat-card.info .stat-num{color:var(--blue);}
+.stat-card.success .stat-num{color:var(--green);}
+
+/* TABS */
+.tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:10px;}
+.tab{background:transparent;border:none;color:var(--muted);padding:10px 16px;cursor:pointer;font-size:.95rem;font-weight:700;font-family:inherit;transition:all .2s;border-bottom:3px solid transparent;margin-bottom:-10px;}
+.tab:hover{color:var(--gold);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* SECTION */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
+.section-title{font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:16px;}
+
+/* SEARCH & FILTER */
+.search-box{display:flex;gap:10px;margin-bottom:16px;}
+.search-input{flex:1;background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-family:inherit;font-size:.9rem;direction:rtl;}
+.search-input:focus{outline:none;border-color:var(--gold);}
+.filter-select{background:var(--dark3);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-family:inherit;font-size:.9rem;cursor:pointer;}
+.filter-select:focus{outline:none;border-color:var(--gold);}
+
+/* LOGS TABLE */
+.logs-table{width:100%;border-collapse:collapse;}
+.logs-table th{background:var(--dark3);padding:12px;text-align:right;font-weight:700;border-bottom:2px solid var(--border);font-size:.85rem;color:var(--muted);}
+.logs-table td{padding:12px;border-bottom:1px solid var(--border);font-size:.9rem;}
+.logs-table tr:hover{background:rgba(201,168,76,.05);}
+
+.event-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;}
+.event-badge.critical{background:rgba(248,81,73,.2);color:var(--red);}
+.event-badge.warning{background:rgba(232,137,42,.2);color:var(--orange);}
+.event-badge.info{background:rgba(88,166,255,.2);color:var(--blue);}
+
+.time-badge{background:rgba(139,148,158,.1);color:var(--muted);padding:4px 8px;border-radius:4px;font-size:.8rem;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:12px;}
+
+/* BUTTONS */
+.button-group{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-export{background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);color:var(--blue);}
+.btn-export:hover{background:rgba(88,166,255,.2);}
+.btn-clear{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:var(--red);}
+.btn-clear:hover{background:rgba(248,81,73,.2);}
+
+/* CHARTS */
+.chart-container{background:var(--dark3);border-radius:8px;padding:16px;margin-bottom:16px;}
+.chart-title{font-size:.95rem;font-weight:700;margin-bottom:12px;color:var(--text);}
+
+.chart-bar{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.chart-label{min-width:100px;font-size:.85rem;color:var(--muted);}
+.chart-bar-fill{flex:1;height:24px;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;position:relative;}
+.chart-bar-value{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.8rem;font-weight:700;color:var(--dark);}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .logs-table{font-size:.8rem;}
+  .logs-table th, .logs-table td{padding:8px;}
+}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">🔒 لوحة الأمان والحماية</div>
+  <div class="actions">
+    <button class="btn" onclick="goBack()">← رجوع</button>
+    <button class="btn danger" onclick="logout()">خروج</button>
+  </div>
+</div>
+
+<div class="container">
+  <!-- STATISTICS -->
+  <div class="stats-grid">
+    <div class="stat-card success">
+      <div class="stat-num" id="total-events">0</div>
+      <div class="stat-label">إجمالي الأحداث</div>
+    </div>
+    <div class="stat-card critical">
+      <div class="stat-num" id="critical-events">0</div>
+      <div class="stat-label">أحداث حرجة</div>
+    </div>
+    <div class="stat-card warning">
+      <div class="stat-num" id="warning-events">0</div>
+      <div class="stat-label">تحذيرات</div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-num" id="suspicious-attempts">0</div>
+      <div class="stat-label">محاولات مريبة</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('logs')">📋 السجلات</button>
+    <button class="tab" onclick="switchTab('analysis')">📊 التحليل</button>
+    <button class="tab" onclick="switchTab('settings')">⚙️ الإعدادات</button>
+  </div>
+
+  <!-- LOGS TAB -->
+  <div id="tab-logs" class="tab-content">
+    <div class="section">
+      <div class="section-title">سجلات الأمان</div>
+      
+      <div class="search-box">
+        <input type="text" class="search-input" id="search-input" placeholder="🔍 ابحث عن حدث..." oninput="filterLogs()">
+        <select class="filter-select" id="level-filter" onchange="filterLogs()">
+          <option value="">جميع المستويات</option>
+          <option value="critical">حرج</option>
+          <option value="warning">تحذير</option>
+          <option value="info">معلومات</option>
+        </select>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="logs-table" id="logs-table">
+          <thead>
+            <tr>
+              <th>التاريخ والوقت</th>
+              <th>الحدث</th>
+              <th>المستوى</th>
+              <th>المتصفح</th>
+            </tr>
+          </thead>
+          <tbody id="logs-body">
+            <tr>
+              <td colspan="4" style="text-align:center;color:var(--muted);">جاري التحميل...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS TAB -->
+  <div id="tab-analysis" class="tab-content" style="display:none;">
+    <div class="section">
+      <div class="section-title">تحليل الأحداث</div>
+      
+      <div class="chart-container">
+        <div class="chart-title">توزيع الأحداث حسب المستوى</div>
+        <div class="chart-bar">
+          <div class="chart-label">حرج</div>
+          <div class="chart-bar-fill" id="critical-bar">
+            <div class="chart-bar-value" id="critical-count">0</div>
+          </div>
+        </div>
+        <div class="chart-bar">
+          <div class="chart-label">تحذير</div>
+          <div class="chart-bar-fill" id="warning-bar" style="background:linear-gradient(90deg,var(--orange),#f59e0b);">
+            <div class="chart-bar-value" id="warning-count">0</div>
+          </div>
+        </div>
+        <div class="chart-bar">
+          <div class="chart-label">معلومات</div>
+          <div class="chart-bar-fill" id="info-bar" style="background:linear-gradient(90deg,var(--blue),#0ea5e9);">
+            <div class="chart-bar-value" id="info-count">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">أكثر الأحداث تكراراً</div>
+        <div id="top-events"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div id="tab-settings" class="tab-content" style="display:none;">
+    <div class="section">
+      <div class="section-title">إعدادات الأمان</div>
+      
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        <button class="btn btn-export" onclick="exportLogs()">📥 تصدير السجلات</button>
+        <button class="btn btn-clear" onclick="clearLogs()">🗑️ حذف السجلات</button>
+        <button class="btn" onclick="resetAttempts()">🔄 إعادة تعيين المحاولات</button>
+        <button class="btn" onclick="refreshData()">🔃 تحديث البيانات</button>
+      </div>
+
+      <div style="background:rgba(248,81,73,.05);border:1px solid rgba(248,81,73,.2);border-radius:8px;padding:16px;margin-bottom:20px;">
+        <div style="font-weight:700;color:var(--red);margin-bottom:8px;">⚠️ معلومات مهمة</div>
+        <ul style="list-style:none;padding:0;font-size:.9rem;line-height:1.6;color:var(--text);">
+          <li>✅ النظام يراقب جميع محاولات الوصول غير المصرح بها</li>
+          <li>✅ يتم تسجيل جميع الأحداث تلقائياً</li>
+          <li>✅ الحد الأقصى للمحاولات المريبة: 10</li>
+          <li>✅ بعد تجاوز الحد، يتم حظر الوصول تلقائياً</li>
+          <li>✅ السجلات تُحفظ محلياً وآمنة</li>
+        </ul>
+      </div>
+
+      <div style="background:rgba(88,166,255,.05);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:16px;">
+        <div style="font-weight:700;color:var(--blue);margin-bottom:8px;">ℹ️ الميزات المحمية</div>
+        <ul style="list-style:none;padding:0;font-size:.9rem;line-height:1.6;color:var(--text);">
+          <li>🚫 منع نسخ النصوص (Ctrl+C)</li>
+          <li>🚫 منع القص والصق</li>
+          <li>🚫 منع فتح أدوات المطورين (F12)</li>
+          <li>🚫 منع الضغط بزر الفأرة الأيمن</li>
+          <li>🚫 منع التحديد والاختيار</li>
+          <li>🚫 منع الطباعة</li>
+          <li>🚫 منع تحميل الموقع في iframe</li>
+          <li>🚫 منع الوصول للـ console</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="protection-system.js"></script>
+<script>
+let allLogs = [];
+
+// ── LOAD DATA ──
+function loadData() {
+  updateStatistics();
+  loadLogs();
+  updateAnalysis();
+}
+
+// ── UPDATE STATISTICS ──
+function updateStatistics() {
+  const stats = protectionSystem.getStatistics();
+  document.getElementById('total-events').textContent = stats.totalEvents;
+  document.getElementById('critical-events').textContent = stats.criticalEvents;
+  document.getElementById('warning-events').textContent = stats.warningEvents;
+  document.getElementById('suspicious-attempts').textContent = stats.suspiciousAttempts;
+}
+
+// ── LOAD LOGS ──
+function loadLogs() {
+  allLogs = protectionSystem.getSecurityLogs();
+  renderLogs(allLogs);
+}
+
+// ── RENDER LOGS ──
+function renderLogs(logs) {
+  const tbody = document.getElementById('logs-body');
+  
+  if (logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);">لا توجد أحداث</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = logs.reverse().map(log => `
+    <tr>
+      <td>
+        <span class="time-badge">${new Date(log.timestamp).toLocaleString('ar-SA')}</span>
+      </td>
+      <td>${log.event}</td>
+      <td>
+        <span class="event-badge ${log.level}">${getLevelText(log.level)}</span>
+      </td>
+      <td style="font-size:.8rem;color:var(--muted);">${getBrowserName(log.userAgent)}</td>
+    </tr>
+  `).join('');
+}
+
+// ── FILTER LOGS ──
+function filterLogs() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const level = document.getElementById('level-filter').value;
+
+  let filtered = allLogs;
+
+  if (search) {
+    filtered = filtered.filter(log => log.event.includes(search));
+  }
+
+  if (level) {
+    filtered = filtered.filter(log => log.level === level);
+  }
+
+  renderLogs(filtered);
+}
+
+// ── UPDATE ANALYSIS ──
+function updateAnalysis() {
+  const stats = protectionSystem.getStatistics();
+  const logs = protectionSystem.getSecurityLogs();
+
+  // Update bars
+  const total = stats.totalEvents || 1;
+  document.getElementById('critical-bar').style.width = (stats.criticalEvents / total * 100) + '%';
+  document.getElementById('warning-bar').style.width = (stats.warningEvents / total * 100) + '%';
+  document.getElementById('info-bar').style.width = (stats.infoEvents / total * 100) + '%';
+
+  document.getElementById('critical-count').textContent = stats.criticalEvents;
+  document.getElementById('warning-count').textContent = stats.warningEvents;
+  document.getElementById('info-count').textContent = stats.infoEvents;
+
+  // Top events
+  const eventCounts = {};
+  logs.forEach(log => {
+    eventCounts[log.event] = (eventCounts[log.event] || 0) + 1;
+  });
+
+  const topEvents = Object.entries(eventCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  const topEventsHtml = topEvents.map(([event, count]) => `
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span>${event}</span>
+      <span style="background:rgba(201,168,76,.2);color:var(--gold);padding:2px 8px;border-radius:4px;font-weight:700;">${count}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('top-events').innerHTML = topEventsHtml || '<div style="color:var(--muted);">لا توجد بيانات</div>';
+}
+
+// ── SWITCH TAB ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById('tab-' + tab).style.display = 'block';
+  event.target.classList.add('active');
+
+  if (tab === 'analysis') {
+    updateAnalysis();
+  }
+}
+
+// ── EXPORT LOGS ──
+function exportLogs() {
+  const data = protectionSystem.exportLogs();
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `security-logs-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ تم تصدير السجلات');
+}
+
+// ── CLEAR LOGS ──
+function clearLogs() {
+  if (!confirm('هل تريد حذف جميع السجلات؟ لا يمكن التراجع.')) return;
+  protectionSystem.clearLogs();
+  loadData();
+  alert('✅ تم حذف السجلات');
+}
+
+// ── RESET ATTEMPTS ──
+function resetAttempts() {
+  protectionSystem.resetSuspiciousAttempts();
+  updateStatistics();
+  alert('✅ تم إعادة تعيين المحاولات المريبة');
+}
+
+// ── REFRESH DATA ──
+function refreshData() {
+  loadData();
+  alert('✅ تم تحديث البيانات');
+}
+
+// ── GET LEVEL TEXT ──
+function getLevelText(level) {
+  const levels = {
+    'critical': '🔴 حرج',
+    'warning': '🟠 تحذير',
+    'info': '🔵 معلومات'
+  };
+  return levels[level] || level;
+}
+
+// ── GET BROWSER NAME ──
+function getBrowserName(userAgent) {
+  if (userAgent.includes('Chrome')) return 'Chrome';
+  if (userAgent.includes('Firefox')) return 'Firefox';
+  if (userAgent.includes('Safari')) return 'Safari';
+  if (userAgent.includes('Edge')) return 'Edge';
+  return 'متصفح آخر';
+}
+
+// ── NAVIGATION ──
+function goBack() {
+  window.location.href = 'admin-panel.html';
+}
+
+function logout() {
+  localStorage.removeItem('pwa_user');
+  window.location.href = 'index.html';
+}
+
+// Load on startup
+window.addEventListener('load', loadData);
+</script>
+</body>
+</html>

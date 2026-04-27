@@ -78,8 +78,8 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .home-icon{font-size:3.8rem;margin-bottom:10px;animation:pulse 3s ease-in-out infinite;}
 .home-title{font-size:2rem;font-weight:900;margin-bottom:7px;}
 .home-sub{color:var(--muted);font-size:.9rem;margin-bottom:34px;line-height:1.8;}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:560px;width:100%;}
-.card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:12px 10px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:560px;width:100%;}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:22px 16px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;border-radius:18px;}
 .card:hover{transform:translateY(-5px);}
 .card:hover::before{opacity:1;}
@@ -91,9 +91,9 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .card.c3:hover{border-color:var(--blue);}
 .card.c4::before{background:linear-gradient(135deg,rgba(63,185,80,.12),transparent);}
 .card.c4:hover{border-color:var(--green);}
-.card-ico{font-size:1.6rem;margin-bottom:6px;display:block;}
-.card-name{font-size:.82rem;font-weight:800;margin-bottom:3px;line-height:1.4;}
-.card-desc{font-size:.68rem;color:var(--muted);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;}
+.card-ico{font-size:2.2rem;margin-bottom:10px;display:block;}
+.card-name{font-size:.98rem;font-weight:800;margin-bottom:5px;line-height:1.4;}
+.card-desc{font-size:.76rem;color:var(--muted);line-height:1.7;}
 .home-brand{margin-top:28px;font-size:.68rem;letter-spacing:3px;color:rgba(201,168,76,.4);}
 .lo-btn{margin-top:13px;background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 20px;border-radius:20px;font-family:'Segoe UI',sans-serif;font-size:.76rem;cursor:pointer;transition:all .2s;}
 .lo-btn:hover{border-color:var(--red);color:var(--red);}
@@ -143,36 +143,8 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .wa-fab{position:fixed;bottom:22px;left:22px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#25d366,#128c7e);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.7rem;box-shadow:0 4px 20px rgba(37,211,102,.45);transition:all .3s;z-index:100;}
 .wa-fab:hover{transform:scale(1.1);}
 
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}.home-title{font-size:1.6rem}.stats-grid{grid-template-columns:repeat(3,1fr)}.user-actions{flex-direction:column}}
-
-
-  .card{min-height:110px;}
-}
-
-  .card{min-height:auto;padding:18px;}
-}
-  .card{min-height:auto;padding:18px;}
-}
-
-  .card{min-height:120px;padding:12px 10px;}
-  .card-name{font-size:.85rem;}
-  .card-desc{font-size:.72rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-  .card-ico{font-size:1.8rem;margin-bottom:8px;}
-}
-
-  .card{min-height:auto;}
-}
-
-.card{height:auto;min-height:120px;}
-.cards a:last-child:nth-child(odd){grid-column:1/-1;max-width:100%;}
-
-@media(max-width:600px){
-  .cards{grid-template-columns:1fr 1fr !important;gap:8px !important;max-width:100% !important;}
-  .card{padding:10px 8px !important;border-radius:12px !important;min-height:0 !important;}
-  .card-ico{font-size:1.4rem !important;margin-bottom:4px !important;display:block;}
-  .card-name{font-size:.76rem !important;line-height:1.3 !important;}
-  .card-desc{font-size:.63rem !important;-webkit-line-clamp:2 !important;display:-webkit-box !important;-webkit-box-orient:vertical !important;overflow:hidden !important;}
-}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:500px){.cards{grid-template-columns:1fr;max-width:320px}.home-title{font-size:1.6rem}.stats-grid{grid-template-columns:repeat(3,1fr)}.user-actions{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -235,7 +207,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
       <a href="shamil.html" class="card c1">
         <span class="card-ico">🎓</span>
         <div class="card-name">الاختبار الشامل</div>
-        <div class="card-desc">92 سؤال شامل</div>
+        <div class="card-desc">قانون الشرطة + الجنسية + الأحوال + الإرهاب</div>
       </a>
       <a href="tareef.html" class="card c1">
         <span class="card-ico">📖</span>
@@ -245,37 +217,37 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
       <a href="ta3beer.html" class="card c2">
         <span class="card-ico">✍️</span>
         <div class="card-name">اختبار التعبير</div>
-        <div class="card-desc">تدرّب على كتابة التعبير</div>
+        <div class="card-desc">تعلّم وتدرّب على كتابة التعبير</div>
       </a>
       <a href="qadaa.html" class="card c3">
         <span class="card-ico">⚖️</span>
         <div class="card-name">القضاء العسكري</div>
-        <div class="card-desc">م.س ٢٠٢٢/٨٧</div>
+        <div class="card-desc">المرسوم السلطاني ٢٠٢٢/٨٧</div>
       </a>
       <a href="progress.html" class="card c4">
         <span class="card-ico">📈</span>
         <div class="card-name">تقدمي ونتائجي</div>
-        <div class="card-desc">نتائجك ومقارنة تقدمك</div>
+        <div class="card-desc">شاهد نتائج جميع اختباراتك ومقارنة تقدمك</div>
       </a>
-      <a href="ai.html" class="card c2">
-        <span class="card-ico">⚖️</span>
-        <div class="card-name">المساعد القانوني</div>
-        <div class="card-desc">أسئلة قانونية عُمانية</div>
+      <a href="ai-enhanced.html" class="card c2">
+        <span class="card-ico">🤖</span>
+        <div class="card-name">المساعد القانوني الذكي</div>
+        <div class="card-desc">مساعد ذكي تفاعلي متقدم في القوانين العُمانية</div>
       </a>
       <a href="maqali.html" class="card c3">
         <span class="card-ico">📝</span>
         <div class="card-name">الأسئلة المقالية والتعاريف</div>
-        <div class="card-desc">55 سؤال مقالي + 54 تعريف</div>
+        <div class="card-desc">55 سؤال مقالي + 54 تعريف مع تصحيح فوري</div>
       </a>
       <a href="oman.html" class="card c4">
         <span class="card-ico">🇴🇲</span>
         <div class="card-name">معلومات عن عُمان</div>
-        <div class="card-desc">تاريخ وجغرافيا — 50 سؤالاً</div>
+        <div class="card-desc">تاريخ وجغرافيا وحكام وأحداث مهمة — 50 سؤال</div>
       </a>
-      <a href="kitab.html" class="card c5" style="grid-column:1/-1;">
+      <a href="kitab.html" class="card c5" style="grid-column:span 2;">
         <span class="card-ico">📋</span>
-        <div class="card-name">منهاج المستجدين</div>
-        <div class="card-desc">5 فصول — 100 سؤال</div>
+        <div class="card-name">منهاج الشرطة المستجدين</div>
+        <div class="card-desc">5 فصول — 100 سؤال اختياري شامل للكتيب كاملاً</div>
       </a>
     </div>
     <div class="home-brand">by: Amal Alfarsi</div>
@@ -310,8 +282,10 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 
 <a id="wa-fab" href="#" class="wa-fab" target="_blank">💬</a>
 
+<script src="protection-system.js"></script>
+<script src="message-system.js"></script>
 <script>
-var GAS = "https://script.google.com/macros/s/AKfycbydhsu8gWWijS9fBnXWj_AJzynhdUO464myEyPY6lD6VWpaabRm68aqcjh8g9z0JtUn/exec";
+var GAS = "https://script.google.com/macros/s/AKfycbxPDKWBpczRYXomMWIsB-QR37mB0aB3pDTbtl_mbrcBis5410cAiGeGEEgCKc_GQVik/exec";
 var ADMIN_PASS  = "amal2025";
 var CONTACT_NUM = "96898981098";
 var _users = null;
@@ -420,8 +394,8 @@ async function doLogin(){
   btn.innerHTML = 'دخول ←';
   btn.disabled = false;
 
-  if(res.msg === 'banned'){
-    document.getElementById('err-banned').classList.add('show');
+  if(res.msg === 'banned' || messageSystem.isUserBanned(fullNum)){
+    window.location.href = 'banned-message.html?phone=' + fullNum;
     return;
   }
 
