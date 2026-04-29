@@ -311,29 +311,31 @@ function checkAnswer(i){
   var rb = document.getElementById('rb-'+i);
   var qb = document.getElementById('qb-'+i);
 
+  // Show model answer
   ma.classList.add('show');
   rr.classList.add('show');
 
-  var count = retryCount[i] || 0;
-  var isFirst = !answered[i];
-
-  // Check if answer seems correct (basic check - not empty and has some content)
-  // User self-evaluates by comparing with model answer
-  if(isFirst){
+  if(!answered[i]){
     answered[i] = true;
     scores.total++;
-    // Show correct/wrong options for self-evaluation
+    
+    // Show self-eval buttons
     rc.style.display = 'inline-block';
     rw.style.display = 'inline-block';
     rb.style.display = 'none';
-    
-    // Add self-eval buttons
     rc.onclick = function(){ markSelf(i, true); };
     rw.onclick = function(){ markSelf(i, false); };
     
     qb.textContent = '👁 قارن إجابتك';
     qb.style.background = 'rgba(88,166,255,.15)';
     qb.style.color = 'var(--blue)';
+    
+    // Also show retry button directly (max 2 times)
+    var count = retryCount[i] || 0;
+    if(count < 2){
+      rb.style.display = 'inline-block';
+      document.getElementById('rbc-'+i).textContent = '(' + (2-count) + ' مرة متبقية)';
+    }
   }
   updateProg();
 }

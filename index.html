@@ -78,7 +78,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .home-icon{font-size:3.8rem;margin-bottom:10px;animation:pulse 3s ease-in-out infinite;}
 .home-title{font-size:2rem;font-weight:900;margin-bottom:7px;}
 .home-sub{color:var(--muted);font-size:.9rem;margin-bottom:34px;line-height:1.8;}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:560px;width:100%;}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:560px;width:100%;}@media(max-width:380px){.cards{grid-template-columns:1fr;}}
 .card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:22px 16px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;border-radius:18px;}
 .card:hover{transform:translateY(-5px);}
@@ -144,7 +144,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .wa-fab:hover{transform:scale(1.1);}
 
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-@media(max-width:500px){.cards{grid-template-columns:1fr;max-width:320px}.home-title{font-size:1.6rem}.stats-grid{grid-template-columns:repeat(3,1fr)}.user-actions{flex-direction:column}}
+@media(max-width:500px){.cards{grid-template-columns:1fr;max-width:380px;gap:10px}.home-title{font-size:1.6rem}.stats-grid{grid-template-columns:repeat(2,1fr)}.user-actions{flex-direction:column}.card{padding:18px 14px;flex-direction:row;text-align:right;gap:12px}.card-ico{font-size:1.8rem;margin-bottom:0;flex-shrink:0}.card-name{font-size:1rem;margin-bottom:3px}.card-desc{font-size:.75rem}}
 </style>
 </head>
 <body>
@@ -229,10 +229,10 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
         <div class="card-name">تقدمي ونتائجي</div>
         <div class="card-desc">شاهد نتائج جميع اختباراتك ومقارنة تقدمك</div>
       </a>
-      <a href="ai-enhanced.html" class="card c2">
-        <span class="card-ico">🤖</span>
-        <div class="card-name">المساعد القانوني الذكي</div>
-        <div class="card-desc">مساعد ذكي تفاعلي متقدم في القوانين العُمانية</div>
+      <a href="ai.html" class="card c2">
+        <span class="card-ico">⚖️</span>
+        <div class="card-name">المساعد القانوني</div>
+        <div class="card-desc">اسأل عن أي موضوع في القوانين العُمانية</div>
       </a>
       <a href="maqali.html" class="card c3">
         <span class="card-ico">📝</span>
@@ -282,8 +282,6 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 
 <a id="wa-fab" href="#" class="wa-fab" target="_blank">💬</a>
 
-<script src="protection-system.js"></script>
-<script src="message-system.js"></script>
 <script>
 var GAS = "https://script.google.com/macros/s/AKfycbxPDKWBpczRYXomMWIsB-QR37mB0aB3pDTbtl_mbrcBis5410cAiGeGEEgCKc_GQVik/exec";
 var ADMIN_PASS  = "amal2025";
@@ -394,8 +392,8 @@ async function doLogin(){
   btn.innerHTML = 'دخول ←';
   btn.disabled = false;
 
-  if(res.msg === 'banned' || messageSystem.isUserBanned(fullNum)){
-    window.location.href = 'banned-message.html?phone=' + fullNum;
+  if(res.msg === 'banned'){
+    document.getElementById('err-banned').classList.add('show');
     return;
   }
 
