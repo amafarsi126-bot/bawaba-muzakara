@@ -78,7 +78,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .home-icon{font-size:3.8rem;margin-bottom:10px;animation:pulse 3s ease-in-out infinite;}
 .home-title{font-size:2rem;font-weight:900;margin-bottom:7px;}
 .home-sub{color:var(--muted);font-size:.9rem;margin-bottom:34px;line-height:1.8;}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:560px;width:100%;}@media(max-width:380px){.cards{grid-template-columns:1fr;}}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:560px;width:100%;}
 .card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:22px 16px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;align-items:center;text-align:center;}
 .card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;border-radius:18px;}
 .card:hover{transform:translateY(-5px);}
@@ -144,7 +144,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 .wa-fab:hover{transform:scale(1.1);}
 
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-@media(max-width:500px){.cards{grid-template-columns:1fr;max-width:380px;gap:10px}.home-title{font-size:1.6rem}.stats-grid{grid-template-columns:repeat(2,1fr)}.user-actions{flex-direction:column}.card{padding:18px 14px;flex-direction:row;text-align:right;gap:12px}.card-ico{font-size:1.8rem;margin-bottom:0;flex-shrink:0}.card-name{font-size:1rem;margin-bottom:3px}.card-desc{font-size:.75rem}}
+@media(max-width:500px){.cards{grid-template-columns:1fr;max-width:320px}.home-title{font-size:1.6rem}.stats-grid{grid-template-columns:repeat(3,1fr)}.user-actions{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -283,28 +283,84 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 <a id="wa-fab" href="#" class="wa-fab" target="_blank">💬</a>
 
 <script>
-var GAS = "https://script.google.com/macros/s/AKfycbxPDKWBpczRYXomMWIsB-QR37mB0aB3pDTbtl_mbrcBis5410cAiGeGEEgCKc_GQVik/exec";
+var FB_URL = "https://bawaba-muzakara-default-rtdb.firebaseio.com";
 var ADMIN_PASS  = "amal2025";
 var CONTACT_NUM = "96898981098";
 var _users = null;
 
-// ── GAS helper ──
-function gas(params){
-  var qs = Object.keys(params).map(function(k){
-    return k+'='+encodeURIComponent(params[k]);
-  }).join('&');
-  return fetch(GAS+'?'+qs, {redirect:'follow'})
-    .then(function(r){ return r.json(); })
-    .catch(function(e){
-      // جرّب بـ POST إذا فشل GET
-      return fetch(GAS, {
-        method:'POST',
-        headers:{'Content-Type':'application/x-www-form-urlencoded'},
-        body: qs,
-        redirect:'follow'
-      }).then(function(r){ return r.json(); })
-        .catch(function(){ return {ok:false, msg:'network'}; });
+// ── Firebase helper ──
+async function fbGet(path){
+  try{
+    var r = await fetch(FB_URL+path+'.json');
+    var d = await r.json();
+    return d;
+  }catch(e){ return null; }
+}
+async function fbSet(path, data){
+  try{
+    await fetch(FB_URL+path+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    return {ok:true};
+  }catch(e){ return {ok:false}; }
+}
+async function fbRemove(path){
+  try{
+    await fetch(FB_URL+path+'.json',{method:'DELETE'});
+    return {ok:true};
+  }catch(e){ return {ok:false}; }
+}
+
+// gas() wrapper - للتوافق مع الكود القديم
+async function gas(params){
+  var action = params.action;
+  var num = params.num ? params.num.replace(/[.#$\[\]]/g,'_') : '';
+  
+  if(action==='check'){
+    var users = await fbGet('/users');
+    if(!users) return {ok:false, banned:false, registered:false};
+    var u = users[params.num.replace(/[.#$\[\]]/g,'_')];
+    if(!u) return {ok:true, registered:false, banned:false};
+    return {ok:true, registered:true, banned:u.banned||false};
+  }
+  if(action==='log'){
+    var key = params.num.replace(/[.#$\[\]]/g,'_');
+    var act = await fbGet('/activity/'+key) || {loginCount:0,lastLogin:''};
+    act.loginCount = (act.loginCount||0)+1;
+    act.lastLogin = new Date().toLocaleString('ar-OM');
+    await fbSet('/activity/'+key, act);
+    return {ok:true};
+  }
+  if(action==='list'){
+    var users = await fbGet('/users');
+    var acts  = await fbGet('/activity') || {};
+    if(!users) return {ok:true, users:[]};
+    var list = Object.values(users).map(function(u){
+      var a = acts[u.num.replace(/[.#$\[\]]/g,'_')] || {};
+      return Object.assign({}, u, {loginCount:a.loginCount||0, lastLogin:a.lastLogin||''});
     });
+    return {ok:true, users:list, data:list};
+  }
+  if(action==='add'){
+    var key = params.num.replace(/[.#$\[\]]/g,'_');
+    var existing = await fbGet('/users/'+key);
+    if(existing) return {ok:false, msg:'موجود مسبقاً'};
+    await fbSet('/users/'+key, {num:params.num, banned:false, addedAt:new Date().toLocaleString('ar-OM')});
+    return {ok:true};
+  }
+  if(action==='ban'||action==='unban'){
+    var key = params.num.replace(/[.#$\[\]]/g,'_');
+    var u = await fbGet('/users/'+key);
+    if(!u) return {ok:false};
+    u.banned = (action==='ban');
+    await fbSet('/users/'+key, u);
+    return {ok:true};
+  }
+  if(action==='delete'){
+    var key = params.num.replace(/[.#$\[\]]/g,'_');
+    await fbRemove('/users/'+key);
+    await fbRemove('/activity/'+key);
+    return {ok:true};
+  }
+  return {ok:false};
 }
 
 // ── PWA ──
@@ -436,7 +492,7 @@ async function loadAdmin(){
     document.getElementById('users-list').innerHTML = '<div class="no-users">⚠️ تعذّر التحميل</div>';
     return;
   }
-  _users = res.data || [];
+  _users = res.users || res.data || [];
   var active  = _users.filter(function(u){ return u.status !== 'محظور'; }).length;
   var banned  = _users.filter(function(u){ return u.status === 'محظور'; }).length;
   document.getElementById('s-total').textContent  = _users.length;
