@@ -323,6 +323,12 @@ async function gas(params){
   }
   if(action==='log'){
     var key = params.num.replace(/[.#$\[\]]/g,'_');
+    // أضف المستخدم تلقائياً إذا ما كان موجوداً
+    var existing = await fbGet('/users/'+key);
+    if(!existing){
+      await fbSet('/users/'+key, {num:params.num, banned:false, addedAt:new Date().toLocaleString('ar-OM')});
+    }
+    // سجّل النشاط
     var act = await fbGet('/activity/'+key) || {loginCount:0,lastLogin:''};
     act.loginCount = (act.loginCount||0)+1;
     act.lastLogin = new Date().toLocaleString('ar-OM');
@@ -448,7 +454,7 @@ async function doLogin(){
   btn.innerHTML = 'دخول ←';
   btn.disabled = false;
 
-  if(res.msg === 'banned'){
+  if(res.banned){
     document.getElementById('err-banned').classList.add('show');
     return;
   }
