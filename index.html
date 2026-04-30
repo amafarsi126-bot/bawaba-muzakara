@@ -172,7 +172,16 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
     </div>
     <button class="lbtn" id="login-btn" onclick="doLogin()">دخول ←</button>
     <div class="lerr err"  id="err-invalid">❌ رقم غير صحيح — أدخل 8 أرقام</div>
-    <div class="lerr ban"  id="err-banned">🚫 تم حظر هذا الرقم<br><small>للاستفسار تواصل مع المشرف</small></div>
+    <div id="err-banned" style="display:none;position:fixed;inset:0;background:linear-gradient(160deg,#0b1120,#1a0a0a);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;flex-direction:column;text-align:center;">
+  <div style="max-width:380px;width:100%;">
+    <div style="font-size:4rem;margin-bottom:16px;">🚫</div>
+    <div style="font-size:1.4rem;font-weight:900;color:#ff6464;margin-bottom:10px;">تم حظر هذا الرقم</div>
+    <div style="font-size:.9rem;color:#8a9bbf;line-height:1.8;margin-bottom:24px;">رقمك موجود في قائمة الحظر<br>للاستفسار تواصل مع المشرفة</div>
+    <a href="https://wa.me/96898981098?text=مرحباً، رقمي محظور وأريد الاستفسار" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#25d366;padding:14px 24px;border-radius:14px;text-decoration:none;font-size:.95rem;font-weight:700;">
+      💬 تواصل مع المشرفة
+    </a>
+  </div>
+</div>
 
     <button class="install-btn" id="install-btn" onclick="installApp()">📲 تثبيت التطبيق على الجهاز</button>
     <button class="adm-trigger" onclick="goScreen('admin-login')">⚙</button>
@@ -281,6 +290,46 @@ var FB_URL = "https://bawaba-muzakara-default-rtdb.firebaseio.com";
 var ADMIN_PASS  = "amal2025";
 var CONTACT_NUM = "96898981098";
 var _users = null;
+
+// ── Device Fingerprint ──
+async function getDeviceId(){
+  var saved = localStorage.getItem('_did');
+  if(saved) return saved;
+  // بناء معرّف من خصائص الجهاز
+  var raw = [
+    navigator.userAgent,
+    navigator.language,
+    screen.width + 'x' + screen.height,
+    screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency || '',
+    navigator.platform || ''
+  ].join('|');
+  // تحويل لـ hash بسيط
+  var hash = 0;
+  for(var i=0;i<raw.length;i++){
+    hash = ((hash<<5)-hash)+raw.charCodeAt(i);
+    hash = hash & hash;
+  }
+  var did = 'D' + Math.abs(hash).toString(36).toUpperCase();
+  localStorage.setItem('_did', did);
+  return did;
+}
+
+async function checkDeviceBan(deviceId){
+  var data = await fbGet('/banned_devices/' + deviceId);
+  return data && data.banned === true;
+}
+
+async function registerDevice(num, deviceId){
+  // ربط الجهاز بالرقم
+  await fbSet('/devices/' + deviceId, {
+    num: num,
+    addedAt: new Date().toLocaleString('ar-OM'),
+    banned: false
+  });
+}
+
 
 // ── Firebase helper ──
 async function fbGet(path){
@@ -402,11 +451,21 @@ window.addEventListener('load', function(){
       var saved = localStorage.getItem('pwa_user');
       if(saved === '__admin__'){ goScreen('admin'); loadAdmin(); }
       else if(saved){
-        // تحقق من الحظر في الخلفية فقط
-        enterHome(saved);
-        gas({action:'check', num:saved}).then(function(res){
-          if(res.msg === 'banned'){ logout(); }
-        });
+        // تحقق من الحظر وسجّل الدخول في الخلفية
+        getDeviceId().then(function(did){
+          return checkDeviceBan(did).then(function(devBanned){
+            if(devBanned){ logout(); return; }
+            return gas({action:'check', num:saved}).then(function(res){
+              if(res.banned){
+                fbSet('/banned_devices/'+did,{num:saved,banned:true,bannedAt:new Date().toLocaleString('ar-OM')});
+                logout();
+              } else {
+                gas({action:'log', num:saved});
+                enterHome(saved);
+              }
+            });
+          });
+        }).catch(function(){ enterHome(saved); });
       }
       else{ goScreen('login'); }
     }, 800);
@@ -442,18 +501,30 @@ async function doLogin(){
   btn.innerHTML = 'جاري التحقق... <span class="ring"></span>';
   btn.disabled = true;
 
-  // تحقق من الحظر فقط
-  var res = await gas({action:'check', num:fullNum});
-
+  // فحص الجهاز أولاً
+  var deviceId = await getDeviceId();
+  var deviceBanned = await checkDeviceBan(deviceId);
+  
   btn.innerHTML = 'دخول ←';
   btn.disabled = false;
 
-  if(res.banned){
-    document.getElementById('err-banned').classList.add('show');
+  if(deviceBanned){
+    var bd=document.getElementById('err-banned'); bd.style.display='flex'; bd.classList.add('show');
     return;
   }
 
-  // سجّل الدخول تلقائياً (حتى لو أول مرة)
+  // تحقق من حظر الرقم
+  var res = await gas({action:'check', num:fullNum});
+
+  if(res.banned){
+    // احظر الجهاز أيضاً
+    await fbSet('/banned_devices/' + deviceId, {num:fullNum, banned:true, bannedAt:new Date().toLocaleString('ar-OM')});
+    var bd=document.getElementById('err-banned'); bd.style.display='flex'; bd.classList.add('show');
+    return;
+  }
+
+  // سجّل الجهاز والدخول
+  await registerDevice(fullNum, deviceId);
   gas({action:'log', num:fullNum});
   localStorage.setItem('pwa_user', fullNum);
   enterHome(fullNum);
@@ -493,8 +564,8 @@ async function loadAdmin(){
     return;
   }
   _users = res.users || res.data || [];
-  var active  = _users.filter(function(u){ return u.status !== 'محظور'; }).length;
-  var banned  = _users.filter(function(u){ return u.status === 'محظور'; }).length;
+  var active  = _users.filter(function(u){ return !u.banned && u.status !== 'محظور'; }).length;
+  var banned  = _users.filter(function(u){ return u.banned === true || u.status === 'محظور'; }).length;
   document.getElementById('s-total').textContent  = _users.length;
   document.getElementById('s-active').textContent = active;
   document.getElementById('s-banned').textContent = banned;
@@ -512,7 +583,7 @@ function renderUsers(){
     return;
   }
   el.innerHTML = list.map(function(u){
-    var isBanned = u.status === 'محظور';
+    var isBanned = u.banned === true || u.status === 'محظور';
     var meta = '';
     if(u.visits)    meta += 'دخل: '+u.visits+' مرة';
     if(u.lastVisit) meta += ' | آخر دخول: '+u.lastVisit;
@@ -552,6 +623,23 @@ async function addUser(){
   setTimeout(function(){ msg.textContent=''; }, 3000);
 }
 
+
+async function banDevice(num){
+  if(!confirm('حظر جهاز ' + num + '؟ لن يستطيع الدخول بأي رقم')) return;
+  // Find device by num
+  var devices = await fbGet('/devices');
+  if(!devices){ alert('لا يوجد جهاز مسجّل لهذا الرقم'); return; }
+  var found = false;
+  for(var did in devices){
+    if(devices[did].num === num){
+      await fbSet('/banned_devices/' + did, {num:num, banned:true, bannedAt:new Date().toLocaleString('ar-OM')});
+      found = true;
+    }
+  }
+  if(found) alert('✅ تم حظر جهاز ' + num);
+  else alert('⚠️ لم يُسجَّل جهاز لهذا الرقم بعد');
+}
+
 async function toggleBan(num, ban){
   if(!confirm((ban?'حظر':'رفع حظر')+' '+num+'؟')) return;
   var res = await gas({action: ban?'ban':'unban', num:num, pass:ADMIN_PASS});
@@ -571,5 +659,43 @@ window.logTest = function(){
   if(user && user !== '__admin__') gas({action:'log', num:user});
 };
 </script>
+
+<script>
+// ── حماية المحتوى ──
+(function(){
+  // منع كليك يمين
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  
+  // منع النسخ والقص والتحديد
+  document.addEventListener('copy',  function(e){ e.preventDefault(); });
+  document.addEventListener('cut',   function(e){ e.preventDefault(); });
+  document.addEventListener('selectstart', function(e){ e.preventDefault(); });
+  
+  // منع اختصارات DevTools و View Source
+  document.addEventListener('keydown', function(e){
+    // F12
+    if(e.key === 'F12') { e.preventDefault(); return false; }
+    // Ctrl+U (view source)
+    if(e.ctrlKey && e.key === 'u') { e.preventDefault(); return false; }
+    // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (DevTools)
+    if(e.ctrlKey && e.shiftKey && ['i','I','j','J','c','C'].includes(e.key)) { e.preventDefault(); return false; }
+    // Ctrl+A (تحديد الكل)
+    if(e.ctrlKey && e.key === 'a') { e.preventDefault(); return false; }
+    // Ctrl+S (حفظ)
+    if(e.ctrlKey && e.key === 's') { e.preventDefault(); return false; }
+    // Ctrl+P (طباعة)
+    if(e.ctrlKey && e.key === 'p') { e.preventDefault(); return false; }
+  });
+
+  // منع السحب
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+  // CSS - منع التحديد
+  var style = document.createElement('style');
+  style.textContent = '* { -webkit-user-select:none!important; -moz-user-select:none!important; user-select:none!important; } input,textarea { -webkit-user-select:text!important; user-select:text!important; }';
+  document.head.appendChild(style);
+})();
+</script>
+
 </body>
 </html>
