@@ -379,11 +379,15 @@ async function gas(params){
   var num = params.num ? params.num.replace(/[.#$\[\]]/g,'_') : '';
   
   if(action==='check'){
-    var users = await fbGet('/users');
-    if(!users) return {ok:false, banned:false, registered:false};
-    var u = users[params.num.replace(/[.#$\[\]]/g,'_')];
-    if(!u) return {ok:true, registered:false, banned:false};
-    return {ok:true, registered:true, banned:u.banned||false};
+    try{
+      var users = await fbGet('/users');
+      if(!users) return {ok:true, banned:false, registered:false}; // اسمح بالدخول لو ما في اتصال
+      var u = users[params.num.replace(/[.#$\[\]]/g,'_')];
+      if(!u) return {ok:true, registered:false, banned:false};
+      return {ok:true, registered:true, banned:u.banned===true};
+    }catch(e){
+      return {ok:true, banned:false, registered:false};
+    }
   }
   if(action==='log'){
     var key = params.num.replace(/[.#$\[\]]/g,'_');
