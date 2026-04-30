@@ -608,7 +608,8 @@ function renderUsers(){
       '<div class="user-info">'+
         '<div class="user-num">'+onlineDot+u.num+(isBanned?'<span class="ban-badge">محظور</span>':'')+'</div>'+
         '<div class="user-meta">'+meta+'</div>'+
-      '</div>'+lastLoginLabel+
+      lastLoginLabel+
+      '</div>'+
       '<div class="user-actions">'+banBtn+
         '<button class="act-btn btn-del" onclick="deleteUser(\''+u.num+'\')">حذف</button>'+
       '</div></div>';

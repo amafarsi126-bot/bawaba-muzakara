@@ -331,13 +331,15 @@ function buildReview(){
 // Protection
 document.addEventListener('contextmenu',function(e){e.preventDefault();});
 document.addEventListener('copy',function(e){e.preventDefault();});
-document.addEventListener('selectstart',function(e){e.preventDefault();});
+document.addEventListener('selectstart',function(e){
+  if(e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();}
+});
 document.addEventListener('keydown',function(e){
   if(e.key==='F12'||( e.ctrlKey&&['u','U','s','S','p','P'].includes(e.key))){e.preventDefault();}
   if(e.ctrlKey&&e.shiftKey&&['i','I','j','J'].includes(e.key)){e.preventDefault();}
 });
 var st=document.createElement('style');
-st.textContent='*{-webkit-user-select:none!important;user-select:none!important;}input,textarea{-webkit-user-select:text!important;user-select:text!important;}';
+st.textContent='*{-webkit-user-select:none!important;user-select:none!important;}input,textarea,button{-webkit-user-select:none!important;user-select:none!important;}';
 document.head.appendChild(st);
 </script>
 </body>
