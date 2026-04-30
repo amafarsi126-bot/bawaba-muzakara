@@ -238,7 +238,7 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
       </a>
       <a href="english.html" class="card c2">
         <span class="card-ico">🇬🇧</span>
-        <div class="card-name">English Test</div>
+        <div class="card-name">اللغة الإنجليزية</div>
       </a>
       <a href="ai.html" class="card c2">
         <span class="card-ico">⚖️</span>
@@ -599,16 +599,22 @@ function renderUsers(){
   el.innerHTML = list.map(function(u){
     var isBanned = u.banned === true || u.status === 'محظور';
     var meta = '';
-    if(u.visits)    meta += 'دخل: '+u.visits+' مرة';
-    if(u.lastVisit) meta += ' | آخر دخول: '+u.lastVisit;
+    if(u.loginCount) meta += 'دخل: '+u.loginCount+' مرة';
+    var onlineDot = u.isOnline
+      ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3fb950;margin-left:6px;" title="متواجد الآن"></span>'
+      : '';
+    var lastLoginHtml = u.lastLogin && u.lastLogin!=='—'
+      ? '<div style="font-size:.7rem;color:#6a7fa8;margin-top:2px;">آخر دخول: '+u.lastLogin+'</div>'
+      : '';
     var banBtn = isBanned
       ? '<button class="act-btn btn-unban" onclick="toggleBan(\''+u.num+'\',false)">رفع الحظر</button>'
-      : '<button class="act-btn btn-ban"   onclick="toggleBan(\''+u.num+'\',true)">حظر</button>';
+      : '<button class="act-btn btn-ban"   onclick="toggleBan(\''+u.num+'\',true)">حظر</button>'+
+        '<button class="act-btn" style="background:rgba(255,150,0,.1);border-color:rgba(255,150,0,.3);color:#ffa064;font-size:.72rem;" onclick="banDevice(\''+u.num+'\')">🔒 حظر الجهاز</button>';
     return '<div class="user-row'+(isBanned?' banned':'')+'">'+
       '<div class="user-info">'+
         '<div class="user-num">'+onlineDot+u.num+(isBanned?'<span class="ban-badge">محظور</span>':'')+'</div>'+
         '<div class="user-meta">'+meta+'</div>'+
-      lastLoginLabel+
+        lastLoginHtml+
       '</div>'+
       '<div class="user-actions">'+banBtn+
         '<button class="act-btn btn-del" onclick="deleteUser(\''+u.num+'\')">حذف</button>'+
