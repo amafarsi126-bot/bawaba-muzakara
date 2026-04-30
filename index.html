@@ -236,6 +236,10 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
         <span class="card-ico">📈</span>
         <div class="card-name">تقدمي ونتائجي</div>
       </a>
+      <a href="english.html" class="card c2">
+        <span class="card-ico">🇬🇧</span>
+        <div class="card-name">English Test</div>
+      </a>
       <a href="ai.html" class="card c2">
         <span class="card-ico">⚖️</span>
         <div class="card-name">المساعد القانوني</div>
@@ -371,10 +375,12 @@ async function gas(params){
     if(!existing){
       await fbSet('/users/'+key, {num:params.num, banned:false, addedAt:new Date().toLocaleString('ar-OM')});
     }
-    // سجّل النشاط
-    var act = await fbGet('/activity/'+key) || {loginCount:0,lastLogin:''};
+    // سجّل النشاط مع الوقت الدقيق
+    var now = Date.now();
+    var act = await fbGet('/activity/'+key) || {loginCount:0,lastLogin:'',lastLoginTime:0};
     act.loginCount = (act.loginCount||0)+1;
     act.lastLogin = new Date().toLocaleString('ar-OM');
+    act.lastLoginTime = now;
     await fbSet('/activity/'+key, act);
     return {ok:true};
   }
@@ -382,9 +388,17 @@ async function gas(params){
     var users = await fbGet('/users');
     var acts  = await fbGet('/activity') || {};
     if(!users) return {ok:true, users:[]};
+    var now = Date.now();
     var list = Object.values(users).map(function(u){
       var a = acts[u.num.replace(/[.#$\[\]]/g,'_')] || {};
-      return Object.assign({}, u, {loginCount:a.loginCount||0, lastLogin:a.lastLogin||''});
+      var lastTime = a.lastLoginTime || 0;
+      var isOnline = (now - lastTime) < 5 * 60 * 1000; // 5 minutes
+      return Object.assign({}, u, {
+        loginCount: a.loginCount||0,
+        lastLogin: a.lastLogin||'—',
+        lastLoginTime: lastTime,
+        isOnline: isOnline
+      });
     });
     return {ok:true, users:list, data:list};
   }
@@ -564,7 +578,7 @@ async function loadAdmin(){
     return;
   }
   _users = res.users || res.data || [];
-  var active  = _users.filter(function(u){ return !u.banned && u.status !== 'محظور'; }).length;
+  var active  = _users.filter(function(u){ return u.isOnline; }).length;
   var banned  = _users.filter(function(u){ return u.banned === true || u.status === 'محظور'; }).length;
   document.getElementById('s-total').textContent  = _users.length;
   document.getElementById('s-active').textContent = active;
@@ -592,9 +606,9 @@ function renderUsers(){
       : '<button class="act-btn btn-ban"   onclick="toggleBan(\''+u.num+'\',true)">حظر</button>';
     return '<div class="user-row'+(isBanned?' banned':'')+'">'+
       '<div class="user-info">'+
-        '<div class="user-num">'+u.num+(isBanned?'<span class="ban-badge">محظور</span>':'')+'</div>'+
+        '<div class="user-num">'+onlineDot+u.num+(isBanned?'<span class="ban-badge">محظور</span>':'')+'</div>'+
         '<div class="user-meta">'+meta+'</div>'+
-      '</div>'+
+      '</div>'+lastLoginLabel+
       '<div class="user-actions">'+banBtn+
         '<button class="act-btn btn-del" onclick="deleteUser(\''+u.num+'\')">حذف</button>'+
       '</div></div>';
