@@ -145,6 +145,13 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
 
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 @media(max-width:500px){.cards{grid-template-columns:repeat(2,1fr);max-width:100%;gap:8px}.home-title{font-size:1.5rem}.home-sub{font-size:.8rem;margin-bottom:20px}.stats-grid{grid-template-columns:repeat(2,1fr)}.user-actions{flex-direction:column}.card{padding:18px 10px;min-height:90px}.card-ico{font-size:1.8rem}.card-name{font-size:.88rem}}
+
+.ticker-wrap{width:100%;overflow:hidden;background:rgba(201,168,76,.08);border-top:1px solid rgba(201,168,76,.2);border-bottom:1px solid rgba(201,168,76,.2);padding:10px 0;margin-bottom:20px;}
+.ticker{display:flex;white-space:nowrap;animation:tickerMove 30s linear infinite;}
+.ticker:hover{animation-play-state:paused;}
+.ticker-item{font-size:.85rem;color:#c9a84c;padding:0 60px;font-family:'Segoe UI',sans-serif;}
+.ticker-item::before{content:'✨  ';}
+@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 </style>
 </head>
 <body>
@@ -215,7 +222,17 @@ body{font-family:'Segoe UI','Tahoma','Arial',sans-serif;background:var(--dark);c
     <div class="home-icon">📚</div>
     <h1 class="home-title">بوابة المذاكرة</h1>
     <p class="home-sub">اختر القسم الذي تريده</p>
-    <div class="cards">
+    <div class="ticker-wrap">
+        <div class="ticker">
+          <span class="ticker-item">اللهم افتح عليهم فتوح العارفين، وذكرهم ما نسوا، وعلمهم ما جهلوا</span>
+          <span class="ticker-item">يا ربّ سدد خطاهم، وأنر بصائرهم، واجعل التوفيق حليفهم في كل سؤال</span>
+          <span class="ticker-item">اللهم ارزقهم قوة الحفظ، وسرعة الفهم، وصفاء الذهن</span>
+          <span class="ticker-item">اللهم افتح عليهم فتوح العارفين، وذكرهم ما نسوا، وعلمهم ما جهلوا</span>
+          <span class="ticker-item">يا ربّ سدد خطاهم، وأنر بصائرهم، واجعل التوفيق حليفهم في كل سؤال</span>
+          <span class="ticker-item">اللهم ارزقهم قوة الحفظ، وسرعة الفهم، وصفاء الذهن</span>
+        </div>
+      </div>
+      <div class="cards">
       <a href="shamil.html" class="card c1">
         <span class="card-ico">🎓</span>
         <div class="card-name">الاختبار الشامل</div>
